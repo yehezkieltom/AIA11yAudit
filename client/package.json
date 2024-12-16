@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "image-filter-color": "^1.0.0",
+    "openai": "^4.76.3",
+    "process": "^0.11.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
