@@ -1,0 +1,27 @@
+.topbar{
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #022177;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    padding: 1rem 2rem;
+    font-size: 27px;
+}
+
+.topbar-text {
+    width: 250px;
+    height: 42px;
+    margin-left: 50px;
+    font-weight: 500;
+    line-height: 41.66px;
+}
+
+.topbar-icon {
+    width: 90px;
+    height: 100px;
+    top: 6.25px;
+    color: white;
+}
+

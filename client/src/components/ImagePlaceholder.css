@@ -1,0 +1,42 @@
+
+.image-placeholder {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    height: auto;
+}
+
+.image-placeholder-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.image-placeholder-image {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-right: 5rem;
+    padding-bottom: 5rem;
+    border: 1px hidden #ddd;
+    object-fit: cover;
+}
+
+.uploaded-placeholder-container {
+    width: 505px;
+    height: auto;
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-right: 5rem;
+    border: 1px hidden #ddd;
+}
+
+.image-placeholder img {
+        width: 160%;
+        height: auto;
+}

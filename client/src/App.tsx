@@ -1,47 +1,51 @@
 import './App.css'
 import React, { useState } from 'react';
-import { streamChatCompletion } from './api';
-import applyColBlindFilter, {res} from './Filtering/Filter';
-
+import { streamChatCompletion } from './Api/api';
+import applyColBlindFilter, { FilteredImage } from './Filtering/FilterColor';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Topbar from './components/Topbar.tsx';
+import UploadPage from './Pages/UploadPage.tsx';
+import MarkPage from './Pages/MarkPage.tsx';
+import { ImageProvider } from './components/ImageContext.tsx';
 
 function App() {
   const userMessage = 'What do you see in the picture, give some insightful HTML features. Does the contents of the picture align with color blindness?';
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [chatResponse, setChatResponse] = useState('');
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [filteredImages, setFilteredImages] = useState<res[]>([]);
+  const [isStreamingSend, setIsStreamingSend] = useState(false);
+  const [isStreamingFilter, setIsStreamingFilter] = useState(false);
+  const [filteredImages, setFilteredImages] = useState<FilteredImage[]>([]);
+  const [buttonPushedSend, setButtonPushedSend] = useState(false);
+  const [buttonPushedFilter, setButtonPushedFilter] = useState(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     setSelectedImage(file || null);
     setFilteredImages([]);
-    console.log(file);
+    setChatResponse('');
+    setButtonPushedSend(false);
+    setButtonPushedFilter(false);
   };
 
   const handleImageFilter = async () => {
-    console.log('Hello!')
-    if(!selectedImage) return;
-    console.log('Hello!2')
-    try{
+    if (!selectedImage) return;
+    setIsStreamingFilter(true);
+    setButtonPushedFilter(true);
+
+    try {
       const res = await applyColBlindFilter(selectedImage);
       setFilteredImages(res);
     } catch (error) {
       console.error('Error applying filter', error);
+    } finally {
+      setIsStreamingFilter(false);
     }
   }
 
   const handleSendMessage = async () => {
-    console.log('Hello!')
     if(!selectedImage) return;
-    console.log('Hello!2')
-    try{
-      const res = await applyColBlindFilter(selectedImage);
-      setFilteredImages(res);
-    } catch (error) {
-      console.error('Error applying filter', error);
-    }
-    console.log('Test');
-    setIsStreaming(true);
+    setIsStreamingSend(true);
+    setButtonPushedSend(true);
 
     const prompt = [
       { role: 'user', content: userMessage }, 
@@ -49,29 +53,37 @@ function App() {
 
     try {
       await streamChatCompletion (prompt, selectedImage, (chunk) => {
-        setChatResponse((prev) => prev + chunk); // Append each chunk to the chat response
+        setChatResponse((prev) => prev + chunk);
       });
     } catch (error) {
       console.error('Error during streaming:', error);
     } finally {
-      setIsStreaming(false);
+      setIsStreamingSend(false);
     }
   };
 
   return (
     <div>
+      <Topbar />
+      <ImageProvider>
+      <Routes>
+        <Route path='/' element={<UploadPage  />} />
+        <Route path='/mark' element={<MarkPage />} />
+      </Routes>
+      </ImageProvider>
+      <div className='main-cunt' >
       <h1>ChatGPT Integration with Image</h1>
       <p>Please input your desired design/image 😊</p>
-      <input type="file" accept="image/*"  onChange={handleImageChange} disabled={isStreaming} />
-      <button onClick={handleSendMessage} disabled={isStreaming || selectedImage == null}>
-        {isStreaming ? 'Streaming...' : 'Send'}
+      <input type="file" accept="image/png, image/jpeg"  onChange={handleImageChange} disabled={isStreamingSend || isStreamingFilter} />
+      <button onClick={handleSendMessage} disabled={isStreamingSend || isStreamingFilter || buttonPushedSend || selectedImage == null}>
+        {isStreamingSend ? 'Streaming...' : 'Send'}
       </button>
-      <button onClick={handleImageFilter} disabled={isStreaming || selectedImage == null}>
-        {isStreaming ? 'Loading...' : 'Filter'}
+      <button onClick={handleImageFilter} disabled={isStreamingSend || isStreamingFilter || buttonPushedFilter || selectedImage == null}>
+        {isStreamingFilter ? 'Loading...' : 'Filter'}
       </button>
       <div>
         <h2>Response:</h2>
-        <p>{chatResponse || (isStreaming ? 'Waiting for response...' : 'No response yet')}</p>
+        <p>{chatResponse || (isStreamingSend ? 'Waiting for response...' : 'No response yet')}</p>
       </div>
       <div>
         <h2>Filtered Image:</h2>
@@ -79,11 +91,38 @@ function App() {
           <div key={index}>
             <h3>{type}</h3>
             <img src={image}/>
-            </div>
+          </div>
         )}
+      </div>
       </div>
     </div>
   );
 };
 
-export default App
+export default App;
+
+
+/* <div className='main-cunt' >
+      <h1>ChatGPT Integration with Image</h1>
+      <p>Please input your desired design/image 😊</p>
+      <input type="file" accept="image/png, image/jpeg"  onChange={handleImageChange} disabled={isStreamingSend || isStreamingFilter} />
+      <button onClick={handleSendMessage} disabled={isStreamingSend || isStreamingFilter || buttonPushedSend || selectedImage == null}>
+        {isStreamingSend ? 'Streaming...' : 'Send'}
+      </button>
+      <button onClick={handleImageFilter} disabled={isStreamingSend || isStreamingFilter || buttonPushedFilter || selectedImage == null}>
+        {isStreamingFilter ? 'Loading...' : 'Filter'}
+      </button>
+      <div>
+        <h2>Response:</h2>
+        <p>{chatResponse || (isStreamingSend ? 'Waiting for response...' : 'No response yet')}</p>
+      </div>
+      <div>
+        <h2>Filtered Image:</h2>
+        {filteredImages.map(({type, image}, index) => 
+          <div key={index}>
+            <h3>{type}</h3>
+            <img src={image}/>
+          </div>
+        )}
+      </div>
+      </div> */

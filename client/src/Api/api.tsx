@@ -3,18 +3,18 @@ const SESSION_TOKEN = import.meta.env.VITE_APP_SESSION_TOKEN;
 
 export const streamChatCompletion = async (
   prompt: { role: string, content: string}[],
-  imageFile: File | null,
+  file: File | null,
   onStreamData: (chunk: string) => void
 ): Promise<void> => {
  
   try {
     let base64DataUrl = null;
-    if (imageFile) {
+    if (file) {
       const reader = new FileReader();
       base64DataUrl = await new Promise<string>((resolve, reject) => {
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = reject;
-        reader.readAsDataURL(imageFile);
+        reader.readAsDataURL(file);
       });
     }
 
@@ -24,7 +24,7 @@ export const streamChatCompletion = async (
       images: base64DataUrl
         ? [
             {
-              filename: imageFile?.name,
+              filename: file?.name,
               base64DataUrl: base64DataUrl,
             },
           ]
