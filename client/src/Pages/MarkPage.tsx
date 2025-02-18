@@ -47,7 +47,6 @@ const MarkPage =  () => {
     const editElement = (index: number, newTitle: string, newDescription: string) => {
         setElements(elements.map((element, i) => 
         i === index ? { ...element, title: newTitle, description: newDescription } : element));
-        console.log('Edited');
     }
     const exportData = (data: typeof elements) => {
         const jsonData = JSON.stringify({ image: imgURL, marked_elements: elements}, null, 2);
