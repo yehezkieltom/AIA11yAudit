@@ -1,0 +1,7 @@
+.scroll-area {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 24rem;
+    overflow-y: auto;
+    padding: 1rem;
+}

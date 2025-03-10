@@ -12,10 +12,10 @@ const ImagePlaceholder = ({img}: ImagePlaceholderProps) => {
             <div className='image-placeholder-box'>
                 {img ? (    
                     <div className='uploaded-placeholder-container'>
-                        <img src={img} className='uploaded-placeholder-image'/>
+                        <img src={img} className='uploaded-placeholder-image' alt="Uploaded content"/>
                     </div>
                 ) : (
-                    <img src={placeholder} className='image-placeholder-image'/>
+                    <img src={placeholder} className='image-placeholder-image' alt="Placeholder"/>
                 )}
             </div>
         </div>

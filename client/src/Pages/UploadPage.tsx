@@ -11,6 +11,8 @@ import { useImageContext } from "../components/ImageContext";
 const UploadPage = () => {
     const [img, setImg] = useState<File | null>(null);
     const [buttonClicked, setButtonClicked] = useState(false);
+    const [dropdownValues, setDropdownValues] = useState<{ [key: string]: string }>({});
+
     const imgURL = img ? URL.createObjectURL(img) : undefined;
     const {setImgURL} = useImageContext();
     const navigate = useNavigate();
@@ -24,38 +26,47 @@ const UploadPage = () => {
     const handleStart = () => {
         setButtonClicked(false);
         console.log(imgURL);
+        console.log(JSON.stringify(dropdownValues));
         if(imgURL) {
             setImgURL(imgURL);
         }
-        navigate('/mark');
+        navigate('/eval');
     }
     const handleBack = () => {
         setButtonClicked(false);
         setImg(null);
     }
 
+    const handleDropdownChange = (values: { [key: string]: string }) => {
+        setDropdownValues(values);
+    }
+
     return (
         <div className="upload-page">
             <div className= "placeholder-area">
                 <ImagePlaceholder img = {imgURL} />
-                {!buttonClicked ? (
+                {!buttonClicked && (
                      <button className="upload-button">
                          Upload Image
                          <img src={uploadlogo} width="20" height="20" />
                          <input type="file" accept="image/jpeg, image/png" onChange={handleImgChange} />
                      </button>
-                ) : (<div className="follow-up-area">
+                )} 
+                {buttonClicked && (
                         <button className="back-button" onClick={handleBack}>
                             Back
-                        </button> 
-                        <button className="start-button" onClick={handleStart}>
-                            Start 
-                            <img src={arrowRight} width="20" height="20" />
-                        </button>  
-                     </div>
-                    )}
+                        </button>
+                )}
             </div>
-            <Dropdown />           
+            <div className="dropdown-area">          
+                <Dropdown onChange={handleDropdownChange}/> 
+                {buttonClicked && (  
+                    <button className="start-button" onClick={handleStart}>
+                        Start 
+                        <img src={arrowRight} width="20" height="20"/>
+                    </button>
+                )}  
+            </div>        
         </div>
     );
 }

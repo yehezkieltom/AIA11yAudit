@@ -1,0 +1,14 @@
+.button {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    background-color: #374151;
+    color: white;
+    padding: 1rem;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #1f2937;
+}

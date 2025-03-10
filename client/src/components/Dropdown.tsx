@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Dropdown.css';
 
-const Dropdown = () => {
+const Dropdown = ({ onChange }: { onChange: (values: { [key: string]: string }) => void }) => {
+    const [selectedOption, setSelectedOption] = useState<{ [key: string]: string }>({
+        'screen-size-category': 'desktop',
+        'screen-size-specific': 'macbook-pro-14',
+        'screen-size-orientation': 'portrait',
+    });
+
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const { id, value } = event.target;
+        const updatedOption = { ...selectedOption, [id]: value };
+        setSelectedOption(updatedOption);
+        onChange(updatedOption);
+    }
+
     return (
         <div className='all-dropdowns'>
             <div className='dropdown'>
                 <label htmlFor='screen-size-category' >Screen Size - Category</label>
-                <select id='screen-size-category'>
+                <select id='screen-size-category' value={selectedOption['screen-size-category']} onChange={handleSelectChange}>
                     <option value="desktop">Desktop</option>
                     <option value="phone">Phone</option>
                     <option value="tablet">Tablet</option>
@@ -14,7 +27,7 @@ const Dropdown = () => {
             </div>
             <div className='dropdown'>
                 <label htmlFor='screen-size-specific'>Screen Size - Specific</label>
-                <select id='screen-size-specific'>
+                <select id='screen-size-specific' value={selectedOption['screen-size-specific']} onChange={handleSelectChange}>
                     <option value="macbook-pro-14">MacBook Pro 14-inch</option>
                     <option value="macbook-pro-16">MacBook Pro 16-inch</option>
                     <option value="standard">Standard 24-inch Monitor</option>
@@ -22,7 +35,7 @@ const Dropdown = () => {
             </div>
             <div className='dropdown'>
                 <label htmlFor='screen-size-orientation'>Screen Size - Orientation</label>
-                <select id='screen-size-orientation'>
+                <select id='screen-size-orientation' value={selectedOption['screen-size-orientation']} onChange={handleSelectChange}>
                     <option value="portrait">Portrait</option>
                     <option value="landscape">Landscape</option>
                 </select>
