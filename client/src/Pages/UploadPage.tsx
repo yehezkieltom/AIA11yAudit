@@ -4,6 +4,7 @@ import './UploadPage.css';
 import uploadlogo from '../assets/svg/upload.svg';
 import arrowRight from '../assets/svg/arrow-right.svg';
 import placeholder from '../assets/image-2.png';
+import LoadingPage from "./LoadingPage";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImageContext } from "../components/ImageContext";
@@ -12,6 +13,7 @@ const UploadPage = () => {
     const [img, setImg] = useState<File | null>(null);
     const [buttonClicked, setButtonClicked] = useState(false);
     const [dropdownValues, setDropdownValues] = useState<{ [key: string]: string }>({});
+    const [loading, setLoading] = useState(false);
 
     const imgURL = img ? URL.createObjectURL(img) : undefined;
     const {setImgURL} = useImageContext();
@@ -24,13 +26,17 @@ const UploadPage = () => {
     };
 
     const handleStart = () => {
+        setLoading(true);
         setButtonClicked(false);
         console.log(imgURL);
         console.log(JSON.stringify(dropdownValues));
         if(imgURL) {
             setImgURL(imgURL);
         }
-        navigate('/eval');
+        setTimeout(() => {
+            setLoading(false);
+            navigate('/eval');
+        }, 2000);
     }
     const handleBack = () => {
         setButtonClicked(false);
@@ -41,7 +47,7 @@ const UploadPage = () => {
         setDropdownValues(values);
     }
 
-    return (
+    return loading ? ( <LoadingPage /> ) : (
         <div className="upload-page">
             <div className= "placeholder-area">
                 <ImagePlaceholder img = {imgURL} />

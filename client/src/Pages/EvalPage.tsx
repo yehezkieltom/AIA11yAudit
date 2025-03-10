@@ -9,6 +9,7 @@ import './EvalPage.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
 import arrowRight from '../assets/svg/arrow-right.svg';
+import LoadingPage from './LoadingPage';
 
 export type StatusType = 'Pass' | 'Fail' | 'Warning';
 export type Level = 'A' | 'AA' | 'AAA';
@@ -48,6 +49,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
     const [expandedChecklist, setExpandedChecklist] = useState<string[]>([]);
     const [expandedGuideline, setExpandedGuideline] = useState<string[]>([]);
     const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+    const [loading, setLoading] = useState(false);
 
     const toggleExpand = (index: number) => {
         setExpandedItems(prev => 
@@ -131,9 +133,18 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
             { guideline: "1.4.4", text: "Allow text resizing without loss of content or functionality.", details: "Ensure that users can increase font sizes without breaking the layout or hiding essential content." }
         ]
     };
+
+
+    const handleBack = () => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            navigate('/');
+        }, 2000);
+    }
     
 
-    return (
+    return loading ? ( <LoadingPage /> ) : (
         <div className='container'>
             <div className='left-section'>
                 <Card>
@@ -157,8 +168,8 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
                     <p className='summary-typography'>{summary.description}</p>
                 </Card>
                 <div className='button-container'>
-                    <button className='back-button' onClick={() => navigate('/')}>Back</button>
-                    <button className="start-button" onClick={() => navigate('/')}>
+                    <button className='back-button' onClick={handleBack}>Back</button>
+                    <button className="start-button" onClick={handleBack}>
                             Upload 
                             <img src={arrowRight} width="20" height="20"/>
                     </button>

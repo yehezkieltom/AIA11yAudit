@@ -1,5 +1,5 @@
 import './App.css'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { streamChatCompletion } from './Api/api';
 import applyColBlindFilter, { FilteredImage } from './Filtering/FilterColor';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -9,6 +9,7 @@ import MarkPage from './Pages/MarkPage.tsx';
 import EvalPage from './Pages/EvalPage.tsx';
 import { StatusType, Level } from './Pages/EvalPage.tsx';
 import { ImageProvider } from './components/ImageContext.tsx';
+import LoadingPage from './Pages/LoadingPage.tsx';
 
 function App() {
   const userMessage = 'What do you see in the picture, give some insightful HTML features. Does the contents of the picture align with color blindness?';
@@ -19,6 +20,7 @@ function App() {
   const [filteredImages, setFilteredImages] = useState<FilteredImage[]>([]);
   const [buttonPushedSend, setButtonPushedSend] = useState(false);
   const [buttonPushedFilter, setButtonPushedFilter] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
 
   const exampleStatus: StatusType = 'Fail';
   const exampleStatus2: StatusType = 'Pass';
@@ -188,7 +190,11 @@ function App() {
     }
   };
 
-  return (
+  useEffect(() => {
+    setTimeout(() => setIsLoaded(false), 1000);
+  }, []);
+
+  return isLoaded ? <LoadingPage /> :(
     <div>
       <Topbar />
       <ImageProvider>
@@ -205,7 +211,15 @@ function App() {
 export default App;
 
 
-/* <div className='main-cunt' >
+/* <Topbar />
+      <ImageProvider>
+      <Routes>
+        <Route path='/' element={<UploadPage  />} />
+        <Route path='/mark' element={<MarkPage />} />
+        <Route path='/eval' element={<EvalPage  data={exampleDataItem} summary={exampleSummary}/>} />
+      </Routes>
+      </ImageProvider>
+<div className='main-cunt' >
       <h1>ChatGPT Integration with Image</h1>
       <p>Please input your desired design/image 😊</p>
       <input type="file" accept="image/png, image/jpeg"  onChange={handleImageChange} disabled={isStreamingSend || isStreamingFilter} />
