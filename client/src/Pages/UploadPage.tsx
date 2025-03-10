@@ -11,7 +11,11 @@ import { useImageContext } from "../components/ImageContext";
 const UploadPage = () => {
     const [img, setImg] = useState<File | null>(null);
     const [buttonClicked, setButtonClicked] = useState(false);
-    const [dropdownValues, setDropdownValues] = useState<{ [key: string]: string }>({});
+    const [dropdownValues, setDropdownValues] = useState<{ [key: string]: string }>({
+        "screen-size-category" : "desktop",
+        "screen-size-specific" : "macbook-pro-14",
+        "screen-size-orientation" : "landscape"
+    });
 
     const imgURL = img ? URL.createObjectURL(img) : undefined;
     const {setImgURL} = useImageContext();
@@ -41,6 +45,10 @@ const UploadPage = () => {
         setDropdownValues(values);
     }
 
+    const handleDebug = () => {
+        console.log(dropdownValues)
+    }
+
     return (
         <div className="upload-page">
             <div className= "placeholder-area">
@@ -65,7 +73,11 @@ const UploadPage = () => {
                         Start 
                         <img src={arrowRight} width="20" height="20"/>
                     </button>
-                )}  
+                )}
+                {/* for testing */}
+                <button className="start-button" onClick={handleDebug}>
+                    check dropdownValues
+                </button>
             </div>        
         </div>
     );
