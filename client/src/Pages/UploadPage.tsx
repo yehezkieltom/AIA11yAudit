@@ -4,6 +4,7 @@ import './UploadPage.css';
 import uploadlogo from '../assets/svg/upload.svg';
 import arrowRight from '../assets/svg/arrow-right.svg';
 import placeholder from '../assets/image-2.png';
+import LoadingPage from "./LoadingPage";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImageContext } from "../components/ImageContext";
@@ -16,6 +17,8 @@ const UploadPage = () => {
         "screen-size-specific" : "macbook-pro-14",
         "screen-size-orientation" : "landscape"
     });
+    const [loading, setLoading] = useState(false);
+    const [jsonScreen, setJsonScreen] = useState('');
 
     const imgURL = img ? URL.createObjectURL(img) : undefined;
     const {setImgURL} = useImageContext();
@@ -28,13 +31,17 @@ const UploadPage = () => {
     };
 
     const handleStart = () => {
+        setLoading(true);
         setButtonClicked(false);
         console.log(imgURL);
-        console.log(JSON.stringify(dropdownValues));
+        console.log(jsonScreen);
         if(imgURL) {
             setImgURL(imgURL);
         }
-        navigate('/eval');
+        setTimeout(() => {
+            setLoading(false);
+            navigate('/eval');
+        }, 2000);
     }
     const handleBack = () => {
         setButtonClicked(false);
@@ -43,13 +50,14 @@ const UploadPage = () => {
 
     const handleDropdownChange = (values: { [key: string]: string }) => {
         setDropdownValues(values);
+        setJsonScreen(JSON.stringify(values));
     }
 
     const handleDebug = () => {
         console.log(dropdownValues)
     }
 
-    return (
+    return loading ? ( <LoadingPage /> ) : (
         <div className="upload-page">
             <div className= "placeholder-area">
                 <ImagePlaceholder img = {imgURL} />

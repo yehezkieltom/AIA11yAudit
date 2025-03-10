@@ -82,7 +82,7 @@
 }
 
 .element-tile {
-    background: #B7CDE6;
+    background: #cbdff6;
     border: 1px solid #ddd;
     border-radius: 15px;
     padding: 1rem;
@@ -92,7 +92,7 @@
 }
 
 .element-tile2 {
-    background: #93bae6;
+    background: #9ebfe6;
     border: 1px solid #ddd;
     border-radius: 15px;
     padding: 1rem;
@@ -137,7 +137,7 @@
     border-radius: 5px;
     height: auto;
     padding-bottom: 0;
-    background: #d9d9d9;
+    background: rgb(236, 241, 244);
 }
 
 .summary-title {
@@ -231,6 +231,8 @@
 }
 
 .start-button {
+    margin-top: 1rem;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -246,5 +248,4 @@
     cursor: pointer;
     text-align: center;
     top: auto;
-    margin-top: 0px;
   }
