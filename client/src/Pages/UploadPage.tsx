@@ -14,6 +14,7 @@ const UploadPage = () => {
     const [buttonClicked, setButtonClicked] = useState(false);
     const [dropdownValues, setDropdownValues] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState(false);
+    const [jsonScreen, setJsonScreen] = useState('');
 
     const imgURL = img ? URL.createObjectURL(img) : undefined;
     const {setImgURL} = useImageContext();
@@ -29,7 +30,7 @@ const UploadPage = () => {
         setLoading(true);
         setButtonClicked(false);
         console.log(imgURL);
-        console.log(JSON.stringify(dropdownValues));
+        console.log(jsonScreen);
         if(imgURL) {
             setImgURL(imgURL);
         }
@@ -45,6 +46,7 @@ const UploadPage = () => {
 
     const handleDropdownChange = (values: { [key: string]: string }) => {
         setDropdownValues(values);
+        setJsonScreen(JSON.stringify(values));
     }
 
     return loading ? ( <LoadingPage /> ) : (
