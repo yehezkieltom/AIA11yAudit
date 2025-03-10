@@ -97,7 +97,6 @@
   border-radius: 8px;
   cursor: pointer;
   text-align: center;
-  margin-top: 2rem;
 }
 
 .back-button {
@@ -123,7 +122,7 @@
   align-items: flex-start;
   width: auto;
   max-width: 100%;
-  gap: 9rem;
+  gap: 12rem;
 } 
 
 .button-row {
