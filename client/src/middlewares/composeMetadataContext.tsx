@@ -15,10 +15,19 @@ const composeMetadataContext = (filteredImages: FilteredImage[], metadata: any) 
     ---
 
     Regarding the design, please consider the following:
+    - **Design Type**: Static Webpage
+
     ### ***Metadata:***
+
+    This design is intended to be viewed on the following device configurations;
     - **Screen Size Category**: ${metadata['screen-size-category']}
     - **Screen Size Specific**: ${metadata['screen-size-specific']}
     - **Screen Size Orientation**: ${metadata['screen-size-orientation']}
+
+    ***Important Considerations:***
+    - The **screen size and resolution impact how to the webpage layout, text, and UI elements are displayed**.
+    - The **screen orientation (portrait/landscape) changes the way elements are arranged** on the page.
+
 
     ### Color Blindness Type Filters Applied: 
     The design has been processed through multiple color blindness filters. The following filters were applied: ${filtertypes}. 
