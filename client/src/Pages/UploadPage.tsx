@@ -3,11 +3,12 @@ import Dropdown from "../components/Dropdown";
 import './UploadPage.css';
 import uploadlogo from '../assets/svg/upload.svg';
 import arrowRight from '../assets/svg/arrow-right.svg';
-import placeholder from '../assets/image-2.png';
+//import placeholder from '../assets/image-2.png';
 import LoadingPage from "./LoadingPage";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImageContext } from "../components/ImageContext";
+import { getBase64 } from "../middlewares/getBase64";
 
 const UploadPage = () => {
     const [img, setImg] = useState<File | null>(null);
@@ -33,15 +34,26 @@ const UploadPage = () => {
     const handleStart = () => {
         setLoading(true);
         setButtonClicked(false);
+
+        const imageB64 = img ? getBase64(img) : '';
+     /* //UI Debugging   
         console.log(imgURL);
-        console.log(jsonScreen);
+        console.log(jsonScreen); */
         if(imgURL) {
             setImgURL(imgURL);
         }
-        setTimeout(() => {
+        /* setTimeout(() => {
             setLoading(false);
             navigate('/eval');
-        }, 2000);
+        }, 2000); 
+        //end here */
+        
+        //TODO: handle form and send request
+
+        navigate('/eval')
+       
+
+
     }
     const handleBack = () => {
         setButtonClicked(false);
