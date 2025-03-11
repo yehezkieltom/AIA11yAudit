@@ -5,7 +5,7 @@ const composeMetadataContext = (filteredImages: FilteredImage[], metadata: any) 
   const filtertypes = filteredImages.map(filterImg => filterImg.type).join(',');
 
   const message = `
-    You are an expert in **web accessibility and WCAG compliance**.
+    You are an expert in **web accessibility and WCAG compliance**, that advises a design team on how to improve the accessibility of their webpages.
     
     Analyze the given **static webpage design and its variations under different color blindness simulations** for accessibility issues according to the **Web Contnet Accessibility Guidelines (WCAG)**, specifically focusing on:
     - **1.1.1 Non-text Content**: Ensure tha essential non-text elements(e.g. images, icons) are **clearly interpretable** and **do not solely rely on color** to convey meaning.
@@ -76,8 +76,14 @@ const composeMetadataContext = (filteredImages: FilteredImage[], metadata: any) 
       - Provide specific **WCAG-aligned** recommendations to improve accessibility.
       - Suggest **contrasta adjustments, alternative color schemes, additional visual cues, or layout refinements** to enhance the design's accessibility.
       - Recommend any **text or alternative descriptions** that should be included to improve the design's accessibility.`;
-      
+
   return ''
 }
 
 export default composeMetadataContext
+
+/* {{Include array of filtered versions}} /*
+/* ...filteredImages.map(img => ({
+  role: "user",
+  content: [{ type: "text", text: `This is the webpage design screenshot processed for ${img.type} color blindness.` }, { type: "image_url", image_url: img.image }]
+})) */
