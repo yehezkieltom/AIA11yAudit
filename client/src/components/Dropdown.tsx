@@ -3,9 +3,9 @@ import './Dropdown.css';
 
 const Dropdown = ({ onChange }: { onChange: (values: { [key: string]: string }) => void }) => {
     const [selectedOption, setSelectedOption] = useState<{ [key: string]: string }>({
-        'screen-size-category': 'desktop',
-        'screen-size-specific': 'macbook-pro-14',
-        'screen-size-orientation': 'landscape',
+        'screen-size-category': '',
+        'screen-size-specific': '',
+        'screen-size-orientation': '',
     });
 
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

@@ -9,14 +9,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImageContext } from "../components/ImageContext";
 import { getBase64 } from "../middlewares/getBase64";
+import composeMetadataContext from "../middlewares/composeMetadataContext";
+import applyColBlindFilter, { FilteredImage } from '../Filtering/FilterColor';
 
 const UploadPage = () => {
     const [img, setImg] = useState<File | null>(null);
+    const [filteredImages, setFilteredImages] = useState<FilteredImage[]>([]);
     const [buttonClicked, setButtonClicked] = useState(false);
     const [dropdownValues, setDropdownValues] = useState<{ [key: string]: string }>({
-        "screen-size-category" : "desktop",
-        "screen-size-specific" : "macbook-pro-14",
-        "screen-size-orientation" : "landscape"
+        "screen-size-category" : "",
+        "screen-size-specific" : "",
+        "screen-size-orientation" : ""
     });
     const [loading, setLoading] = useState(false);
     const [jsonScreen, setJsonScreen] = useState('');
@@ -31,10 +34,19 @@ const UploadPage = () => {
         setButtonClicked(true);
     };
 
-    const handleStart = () => {
+    const handleStart = async () => {
         setLoading(true);
         setButtonClicked(false);
 
+        {/* Filter Logic */}
+        if(!img) return;
+        try {
+            const res =  await applyColBlindFilter(img);
+            setFilteredImages(res);
+          } catch (error) {
+            console.error('Error applying filter', error);
+        };
+    
         const imageB64 = img ? getBase64(img) : '';
      /* //UI Debugging   
         console.log(imgURL);
@@ -50,10 +62,9 @@ const UploadPage = () => {
         
         //TODO: handle form and send request
 
+        composeMetadataContext(filteredImages, jsonScreen);
+
         navigate('/eval')
-       
-
-
     }
     const handleBack = () => {
         setButtonClicked(false);
@@ -67,6 +78,7 @@ const UploadPage = () => {
 
     const handleDebug = () => {
         console.log(dropdownValues)
+        console.log(jsonScreen)
     }
 
     return loading ? ( <LoadingPage /> ) : (
