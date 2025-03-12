@@ -13,7 +13,7 @@ import LoadingPage from './LoadingPage';
 import { useAPI } from '../Api/apiContext';
 
 
-export type StatusType = 'Pass' | 'Fail' | 'Warning';
+export type StatusType = 'Pass' | 'Fail' | 'Warning' | null;
 export type Level = 'A' | 'AA' | 'AAA';
 
 interface DataItem {
@@ -53,6 +53,36 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
     const [expandedGuideline, setExpandedGuideline] = useState<string[]>([]);
     const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
     // const [loading, setLoading] = useState(false);
+
+    const wcagDictionary: Record<number, DataItem> = {
+        1.1: {
+            title: "Non-text Content",
+            status: null,
+            description: "Ensure all non-text content has a text alternative.",
+            open: true,
+            wcag_num: 1.1,
+            wcag_t: "Non-text Content",
+            level: "A",
+        },
+        1.2: {
+            title: "Time-based Media",
+            status: null,
+            description: "Provide alternatives for time-based media such as captions and transcripts.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Time-based Media",
+            level: "AA",
+        },
+        1.4: {
+            title: "Distinguishable",
+            status: null,
+            description: "Improve text contrast and resize capabilities.",
+            open: false,
+            wcag_num: 1.4,
+            wcag_t: "Distinguishable",
+            level: "AAA",
+        },
+    };
 
     const toggleExpand = (index: number) => {
         setExpandedItems(prev => 
