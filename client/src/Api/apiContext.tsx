@@ -27,6 +27,7 @@ export interface APIContextType {
     designMetadata: Metadata;
     requests: RequestsState;
     isLoading: boolean;
+    setIsLoadingExternal: (value: boolean) => void;
     allRequestComplete: () => boolean;
     submitDesign: (
         data: Metadata, 
@@ -55,6 +56,10 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
             req.status === 'completed' || req.status === 'error'
         )
     };
+
+    const setIsLoadingExternal = (value: boolean): void => {
+        setIsLoading(value)
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const submitDesign = async (
@@ -146,6 +151,7 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
             designMetadata,
             requests,
             isLoading,
+            setIsLoadingExternal,
             allRequestComplete,
             submitDesign,
             resetState

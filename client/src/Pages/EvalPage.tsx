@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useImageContext } from '../components/ImageContext';
 import ImagePlaceholder from '../components/ImagePlaceholder';
 import { ChevronDown, ChevronUp, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import arrowRight from '../assets/svg/arrow-right.svg';
 import LoadingPage from './LoadingPage';
 import { useAPI } from '../Api/apiContext';
+import { guidelines } from '../middlewares/composeMetadataContext';
 
 
 export type StatusType = 'Pass' | 'Fail' | 'Warning';
@@ -43,7 +44,7 @@ interface EvalPageProps {
 const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
     const navigate = useNavigate();
     const { imgURL } = useImageContext();
-    const { isLoading } = useAPI();
+    const { isLoading, setIsLoadingExternal, allRequestComplete, requests, resetState } = useAPI();
     const [activeCard, setActiveCard] = useState<"violations" | "checklist" | null>("violations");
     const [selectedStatuses, setSelectedStatuses] = useState<StatusType[]>(['Pass', 'Fail', 'Warning']);
     const [selectedLevels, setSelectedLevels] = useState<Level[]>(['A', 'AA', 'AAA']);
@@ -52,6 +53,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
     const [expandedChecklist, setExpandedChecklist] = useState<string[]>([]);
     const [expandedGuideline, setExpandedGuideline] = useState<string[]>([]);
     const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+    const [reports, setReports] = useState<unknown[]>([]);
     // const [loading, setLoading] = useState(false);
 
     const toggleExpand = (index: number) => {
@@ -144,8 +146,20 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
         //     setLoading(false);
         //     navigate('/');
         // }, 2000);
+        resetState();
         navigate('/');
     }
+
+    useEffect(() => {
+        if (allRequestComplete()) {
+            //parse the result
+            for (const guideline of guidelines) {
+                if ()
+            }
+
+            setIsLoadingExternal(false);
+        }
+    })
     
 
     return isLoading ? ( <LoadingPage /> ) : (
