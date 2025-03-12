@@ -249,3 +249,16 @@
     text-align: center;
     top: auto;
   }
+
+  .level-circle {
+    width: 30px;
+    height: 30px;
+    background-color: #cbdff6;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 14px;
+  }

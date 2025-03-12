@@ -10,8 +10,11 @@ const composeMetadataContext = (filteredImages: FilteredImage[], metadata: any) 
     Analyze the given **static webpage design and its variations under different color blindness simulations** for accessibility issues according to the **Web Contnet Accessibility Guidelines (WCAG)**, specifically focusing on:
     - **1.1.1 Non-text Content**: Ensure tha essential non-text elements(e.g. images, icons) are **clearly interpretable** and **do not solely rely on color** to convey meaning.
     - **1.2.1 - 1.2.9 Multimedia Content**: Identify any issues that might make content **inaccessible to users who rely on caption, audio description, or text alternatives.**
-    - **1.4.4 Resize Text**: Determine whether **text elements remain readable and usable when resized up to 200%** without loss of information or functionality.
-
+    - **1.4.1 Use of Color**: Ensure that **color is not the sole means of conveying information** and that **elements have alternative indicators (e.g., text, patterns, or labels)**.
+    - **1.4.3 Contrast (Minimum)**: Ensure that **text has a minimum contrast ratio of 4.5:1 (or 3:1 for large text)** to remain readable under different conditions.
+    - **1.4.4 Resize Text**: Determine whether **text elements remain readable and usable** when **resized up to 200% without loss of information or functionality**.
+    - **1.4.10 Reflow**: Ensure that **content remains functional** and **readable without requiring horizontal scrolling at 400% zoom**.
+    - **1.4.11 Non-text Contrast**: Verify that **UI components (e.g., buttons, input fields, graphical elements) have a minimum contrast ratio of 3:1** to remain distinguishable.
     ---
 
     Regarding the design, please consider the following:
@@ -70,18 +73,37 @@ const composeMetadataContext = (filteredImages: FilteredImage[], metadata: any) 
       - **1.2.9 Audio-only (Live)**: Are **audio descriptions available for all multimedia content**?
                 - If **placeholders for audio-only content** exist, are **alternative text descriptions** provided and if so, are there **UI elemenst provided to display them**?
 
-    3. **WCAG 1.4.4 Resize Text**
+    3. **WCAG 1.4.1 Use of Color**
+      - Does any content rely solely on color to convey meaning?
+      - Are additional visual indicators (e.g., icons, underlines, text labels) used alongside color?
+      - If color-coded messages are present, are text-based alternatives provided?
+
+    4. **WCAG 1.4.3 Contrast (Minimum)**
+      - Does all standard text meet a contrast ratio of at least 4.5:1?
+      - Does large text (18pt or 14pt bold) meet a contrast ratio of at least 3:1?
+      - Do links, buttons, and UI elements have sufficient contrast against their background?
+
+    5. **WCAG 1.4.4 Resize Text**
       - Can all text be resized up to **200% without breaking the layout**?
       - Does **text remain readbale and properly spaced** at larger sizes?
       - Are **interactive elements (buttons, links, form fields)** still usable at increased text sizes?
 
-    4. **Compare the Color-Blind Filtered Versions of the Design Against the Original**
+    6. **WCAG 1.4.10 Reflow**
+      - Can content be viewed at 400% zoom without requiring horizontal scrolling?
+      - Are essential elements still accessible and functional when zoomed in?
+
+    7. **WCAG 1.4.11 Non-text Contrast**
+      - Do graphical elements such as icons, form borders, and buttons maintain a minimum contrast ratio of 3:1?
+      - Are UI components distinguishable from the background?
+      - Are hover states, focus indicators, and form controls visually clear?
+
+    8. **Compare the Color-Blind Filtered Versions of the Design Against the Original**
       - Identify if any **essential UI elements become indistinguishable** under certain color blindness filters.
       - Check if **text remains radable** across all versions.
       - Evaluate if **interactive elements (buttons, links, form fields)** remain **visually distinct** and **perceivable**.
       - Ensure **sufficient contrast between text and background colors** to avoid readability issues.
 
-    5. **Accessibility Recommendations**
+    9. **Accessibility Recommendations**
       - Provide specific **WCAG-aligned** recommendations to improve accessibility.
       - Suggest **contrasta adjustments, alternative color schemes, additional visual cues, or layout refinements** to enhance the design's accessibility.
       - Recommend any **text or alternative descriptions** that should be included to improve the design's accessibility.`;
