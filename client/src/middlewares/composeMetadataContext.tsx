@@ -1,10 +1,12 @@
-import { FilteredImage } from '../Filtering/FilterColor';
+import Metadata from '../interfaces/Metadata';
 
+export type Guidelines = "1.1.1" | "1.4.1" | "1.4.3" | "1.4.10" | "1.4.11";
 
-const composeMetadataContext = (filteredImages: FilteredImage[], metadata: any) => {
-  const filtertypes = filteredImages.map(filterImg => filterImg.type).join(',');
+const composeMetadataContext = (imageName: string, metadata: Metadata, guideline: Guidelines) => {
+  // const filtertypes = filteredImages.map(filterImg => filterImg.type).join(',');
 
-  const message = `
+  /* \\sorry but this is just way too much information.
+    const message = `
     You are an expert in **web accessibility and WCAG compliance**, that advises a design team on how to improve the accessibility of their webpages.
     
     Analyze the given **static webpage design and its variations under different color blindness simulations** for accessibility issues according to the **Web Contnet Accessibility Guidelines (WCAG)**, specifically focusing on:
@@ -85,8 +87,10 @@ const composeMetadataContext = (filteredImages: FilteredImage[], metadata: any) 
       - Provide specific **WCAG-aligned** recommendations to improve accessibility.
       - Suggest **contrasta adjustments, alternative color schemes, additional visual cues, or layout refinements** to enhance the design's accessibility.
       - Recommend any **text or alternative descriptions** that should be included to improve the design's accessibility.`;
+ */
 
-  return ''
+  
+  return `I have a UI design named ${imageName} that is tailored made for ${metadata['screen-size-specific']} in ${metadata['screen-size-orientation']} orientation. I would like you to check whether or not the design is WCAG ${guideline} compliant.`
 }
 
 export default composeMetadataContext

@@ -9,10 +9,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImageContext } from "../components/ImageContext";
 import { getBase64 } from "../middlewares/getBase64";
-import composeMetadataContext from "../middlewares/composeMetadataContext";
 import applyColBlindFilter, { FilteredImage } from '../Filtering/FilterColor';
+import { useAPI } from "../Api/apiContext";
 
 const UploadPage = () => {
+    const { submitDesign } = useAPI();
     const [img, setImg] = useState<File | null>(null);
     const [filteredImages, setFilteredImages] = useState<FilteredImage[]>([]);
     const [buttonClicked, setButtonClicked] = useState(false);
@@ -22,7 +23,7 @@ const UploadPage = () => {
         "screen-size-orientation" : ""
     });
     const [loading, setLoading] = useState(false);
-    const [jsonScreen, setJsonScreen] = useState('');
+    // const [jsonScreen, setJsonScreen] = useState('');
 
     const imgURL = img ? URL.createObjectURL(img) : undefined;
     const {setImgURL} = useImageContext();
@@ -61,8 +62,8 @@ const UploadPage = () => {
         //end here */
         
         //TODO: handle form and send request
-
-        composeMetadataContext(filteredImages, jsonScreen);
+        await submitDesign(dropdownValues, await imageB64, img.name, filteredImages)
+        
 
         navigate('/eval')
     }
@@ -73,13 +74,13 @@ const UploadPage = () => {
 
     const handleDropdownChange = (values: { [key: string]: string }) => {
         setDropdownValues(values);
-        setJsonScreen(JSON.stringify(values));
+        // setJsonScreen(JSON.stringify(values));
     }
 
-    const handleDebug = () => {
+    /* const handleDebug = () => {
         console.log(dropdownValues)
         console.log(jsonScreen)
-    }
+    } */
 
     return loading ? ( <LoadingPage /> ) : (
         <div className="upload-page">
@@ -107,9 +108,9 @@ const UploadPage = () => {
                     </button>
                 )}
                 {/* for testing */}
-                <button className="start-button" onClick={handleDebug}>
+                {/* <button className="start-button" onClick={handleDebug}>
                     check dropdownValues
-                </button>
+                </button> */}
             </div>        
         </div>
     );
