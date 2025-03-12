@@ -51,37 +51,143 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
     const [expandedItems, setExpandedItems] = useState<number[]>([]);
     const [expandedChecklist, setExpandedChecklist] = useState<string[]>([]);
     const [expandedGuideline, setExpandedGuideline] = useState<string[]>([]);
-    const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-    // const [loading, setLoading] = useState(false);
 
-    const wcagDictionary: Record<number, DataItem> = {
-        1.1: {
+    const wcagDictionary: Record<string, DataItem> = {
+        '1.1.1': {
             title: "Non-text Content",
             status: null,
-            description: "Ensure all non-text content has a text alternative.",
+            description: "Ensure all non-text content has a text alternative, including images, charts, graphs, and multimedia elements.",
             open: true,
             wcag_num: 1.1,
             wcag_t: "Non-text Content",
             level: "A",
         },
-        1.2: {
-            title: "Time-based Media",
+        '1.4.1': {
+            title: "Use of Color",
             status: null,
-            description: "Provide alternatives for time-based media such as captions and transcripts.",
+            description: "Ensure color is not the sole means of conveying information.",
             open: true,
-            wcag_num: 1.2,
-            wcag_t: "Time-based Media",
+            wcag_num: 1.4,
+            wcag_t: "Use of Color",
+            level: "A",
+        },
+        '1.4.3': {
+            title: "Contrast (Minimum)",
+            status: null,
+            description: "Ensure text has a contrast ratio of at least 4.5:1 (or 3:1 for large text).",
+            open: true,
+            wcag_num: 1.4,
+            wcag_t: "Contrast (Minimum)",
             level: "AA",
         },
-        1.4: {
-            title: "Distinguishable",
+        '1.4.4': {
+            title: "Resize Text",
             status: null,
-            description: "Improve text contrast and resize capabilities.",
-            open: false,
+            description: "Text should be resizable up to 200% without loss of content or functionality.",
+            open: true,
             wcag_num: 1.4,
-            wcag_t: "Distinguishable",
+            wcag_t: "Resize Text",
+            level: "AA",
+        },
+        '1.4.10': {
+            title: "Reflow",
+            status: null,
+            description: "Ensure content remains usable at 400% zoom without requiring horizontal scrolling.",
+            open: true,
+            wcag_num: 1.4,
+            wcag_t: "Reflow",
+            level: "AA",
+        },
+        '1.4.11': {
+            title: "Non-text Contrast",
+            status: null,
+            description: "Ensure UI elements like buttons, form controls, and graphical elements have sufficient contrast (minimum 3:1).",
+            open: true,
+            wcag_num: 1.4,
+            wcag_t: "Non-text Contrast",
+            level: "AA",
+        },
+        '1.2.1': {
+            title: "Audio-only and Video-only (Prerecorded)",
+            status: null,
+            description: "Provide text alternatives for audio and video content.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Audio-only and Video-only",
+            level: "A",
+        },
+        '1.2.2': {
+            title: "Captions (Prerecorded)",
+            status: null,
+            description: "Ensure that prerecorded videos have captions.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Captions (Prerecorded)",
+            level: "A",
+        },
+        '1.2.3': {
+            title: "Audio Description or Media Alternative (Prerecorded)",
+            status: null,
+            description: "Provide an audio description or text alternative for video content.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Audio Description",
+            level: "A",
+        },
+        '1.2.4': {
+            title: "Captions (Live)",
+            status: null,
+            description: "Live multimedia presentations should include captions.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Captions (Live)",
+            level: "AA",
+        },
+        '1.2.5': {
+            title: "Audio Description (Prerecorded)",
+            status: null,
+            description: "Ensure an audio description track is available for prerecorded video content.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Audio Description",
+            level: "AA",
+        },
+        '1.2.6': {
+            title: "Sign Language (Prerecorded)",
+            status: null,
+            description: "Consider embedding a sign language interpreter video alongside the main content.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Sign Language (Prerecorded)",
             level: "AAA",
         },
+        '1.2.7': {
+            title: "Extended Audio Description (Prerecorded)",
+            status: null,
+            description: "For complex visual content, allow additional audio descriptions beyond the default.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Extended Audio Description",
+            level: "AAA",
+        },
+        '1.2.8': {
+            title: "Media Alternative (Prerecorded)",
+            status: null,
+            description: "Ensure text-based alternatives are available for all multimedia content.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Media Alternative",
+            level: "AAA",
+        },
+        '1.2.9': {
+            title: "Audio-only (Live)",
+            status: null,
+            description: "For live broadcasts, provide real-time captions or text-based descriptions.",
+            open: true,
+            wcag_num: 1.2,
+            wcag_t: "Audio-only (Live)",
+            level: "AAA",
+        }
     };
 
     const toggleExpand = (index: number) => {
