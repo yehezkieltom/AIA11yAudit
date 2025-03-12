@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
 import arrowRight from '../assets/svg/arrow-right.svg';
 import LoadingPage from './LoadingPage';
+import { useAPI } from '../Api/apiContext';
+
 
 export type StatusType = 'Pass' | 'Fail' | 'Warning';
 export type Level = 'A' | 'AA' | 'AAA';
@@ -41,6 +43,7 @@ interface EvalPageProps {
 const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
     const navigate = useNavigate();
     const { imgURL } = useImageContext();
+    const { isLoading } = useAPI();
     const [activeCard, setActiveCard] = useState<"violations" | "checklist" | null>("violations");
     const [selectedStatuses, setSelectedStatuses] = useState<StatusType[]>(['Pass', 'Fail', 'Warning']);
     const [selectedLevels, setSelectedLevels] = useState<Level[]>(['A', 'AA', 'AAA']);
@@ -49,7 +52,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
     const [expandedChecklist, setExpandedChecklist] = useState<string[]>([]);
     const [expandedGuideline, setExpandedGuideline] = useState<string[]>([]);
     const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
 
     const toggleExpand = (index: number) => {
         setExpandedItems(prev => 
@@ -140,15 +143,16 @@ const EvalPage: React.FC<EvalPageProps> =  ({ data, summary}) => {
 
 
     const handleBack = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            navigate('/');
-        }, 2000);
+        // setLoading(true);
+        // setTimeout(() => {
+        //     setLoading(false);
+        //     navigate('/');
+        // }, 2000);
+        navigate('/');
     }
     
 
-    return loading ? ( <LoadingPage /> ) : (
+    return isLoading ? ( <LoadingPage /> ) : (
         <div className='container'>
             <div className='left-section'>
                 <Card>

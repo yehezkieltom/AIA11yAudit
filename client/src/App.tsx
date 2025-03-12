@@ -2,7 +2,7 @@ import './App.css'
 import React, { useState, useEffect } from 'react';
 import { streamChatCompletion } from './Api/api';
 import applyColBlindFilter, { FilteredImage } from './Filtering/FilterColor';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Topbar from './components/Topbar.tsx';
 import UploadPage from './Pages/UploadPage.tsx';
 import MarkPage from './Pages/MarkPage.tsx';
@@ -10,6 +10,7 @@ import EvalPage from './Pages/EvalPage.tsx';
 import { StatusType, Level } from './Pages/EvalPage.tsx';
 import { ImageProvider } from './components/ImageContext.tsx';
 import LoadingPage from './Pages/LoadingPage.tsx';
+import { APIProvider } from './Api/apiContext.jsx';
 
 function App() {
   const userMessage = 'What do you see in the picture, give some insightful HTML features. Does the contents of the picture align with color blindness?';
@@ -197,13 +198,15 @@ function App() {
   return isLoaded ? <LoadingPage /> :(
     <div>
       <Topbar />
-      <ImageProvider>
-      <Routes>
-        <Route path='/' element={<UploadPage  />} />
-        <Route path='/mark' element={<MarkPage />} />
-        <Route path='/eval' element={<EvalPage  data={exampleDataItem} summary={exampleSummary}/>} />
-      </Routes>
-      </ImageProvider>
+      <APIProvider>
+        <ImageProvider>
+          <Routes>
+            <Route path='/' element={<UploadPage  />} />
+            <Route path='/mark' element={<MarkPage />} />
+            <Route path='/eval' element={<EvalPage  data={exampleDataItem} summary={exampleSummary}/>} />
+          </Routes>
+        </ImageProvider>
+      </APIProvider>
     </div>
   );
 };

@@ -1,26 +1,40 @@
-import Metadata from "../interfaces/Metadata"
 import Base64ImageOpenAI from "../interfaces/Base64ImageOpenAI"
 
-type ImageCollectionOpenAI = Array<Base64ImageOpenAI>
+import { FilteredImage } from "../Filtering/FilterColor";
+
+// type ImageCollectionOpenAI = Array<Base64ImageOpenAI>
 
 
-export const composeGeneric = async (
-    metadata: Metadata,
-    imageB64: string,
+export const composeGeneric = (
+    imageB64Original: string,
     imageName: string,
+    imageB64Filtered: FilteredImage[],
     sysMessage: string,
-    fewShotExamples: ImageCollectionOpenAI,
+    /* fewShotExamples: ImageCollectionOpenAI, */
     userMessage: string
-) : Promise<string> => {
+) : string => {
+
+    const filteredImage : Base64ImageOpenAI[] = []
+    for (const cbMode of imageB64Filtered) {
+        filteredImage.push({
+            filename: `${imageName}_${cbMode.type}`,
+            base64DataUrl: cbMode.image
+        });
+    }
+
     return JSON.stringify({
         'model': import.meta.env.GPT_MODEL,
         'max-completion-tokens' : 100,
+        'response_format': {
+            'type' : 'json_object'
+        },
         'images': [
             {
-                'filename': imageName,
-                'base64DataUrl': imageB64,
+                'filename': `${imageName}_nofilter`,
+                'base64DataUrl': imageB64Original,
             },
-            ...fewShotExamples
+            ...filteredImage
+/*             ...fewShotExamples */
         ],
         'messages':[
             {
