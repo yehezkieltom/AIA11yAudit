@@ -122,7 +122,7 @@
   align-items: flex-start;
   width: auto;
   max-width: 100%;
-  gap: 12rem;
+  gap: 1rem;
 } 
 
 .button-row {
@@ -139,11 +139,13 @@
       justify-content: flex-start;
       min-height: auto;
       gap: 5px;
+      height: 105vh;
   }
 
   .dropdown-area {
       align-self: flex-start;
       gap: 10px;
+      max-height: 400px;
     }
 
   .placeholder-area {
@@ -170,5 +172,7 @@
     width: 155px;
     max-width: 300px;
     text-align: center;
+    margin-left: 30px;
+
   }
 }

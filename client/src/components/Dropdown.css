@@ -4,11 +4,12 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 1.5rem;
     font-family: 'DM Sans', sans-serif;
     padding: 1rem;
     margin-right: 4rem;
     gap: 1.5rem;
+    height: 478px;
+    margin: auto;
 }
 
 .dropdown {
@@ -60,7 +61,10 @@
     }
 
     .all-dropdowns {
-        max-width: 100%;
         align-items: center;
+    }
+
+    .dropdown select {
+        width: 400px;
     }
 }

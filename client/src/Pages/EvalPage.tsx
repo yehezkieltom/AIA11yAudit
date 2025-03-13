@@ -23,7 +23,7 @@ interface DataItem {
     status: StatusType;
     description: string;
     open: boolean;
-    wcag_num: number;
+    wcag_num: string;
     wcag_t: string;
     level: Level;
 }
@@ -45,7 +45,7 @@ interface EvalPageProps {
 const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     const navigate = useNavigate();
     const { imgURL } = useImageContext();
-    const { isLoading, setIsLoadingExternal, allRequestComplete, requests, resetState } = useAPI();
+    //const { isLoading, setIsLoadingExternal, allRequestComplete, requests, resetState } = useAPI();
     const [activeCard, setActiveCard] = useState<"violations" | "checklist" | null>("violations");
     const [selectedStatuses, setSelectedStatuses] = useState<StatusType[]>(['Pass', 'Fail', 'Warning']);
     const [selectedLevels, setSelectedLevels] = useState<Level[]>(['A', 'AA', 'AAA']);
@@ -349,12 +349,30 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                 <Card>
                     <h4 className='summary-title'>Summary</h4>
                     <p className='summary-typography'>
-                        Passed elements: <strong>{summary.passed}/{summary.total} ({((summary.passed / summary.total) * 100).toFixed(0)}%)</strong>
+                        Passed elements: 
+                        <strong>
+                            {dummy_data.filter(item => item.status === "Pass").length}/{dummy_data.length} 
+                            ({((dummy_data.filter(item => item.status === "Pass").length / dummy_data.length) * 100).toFixed(0)}%)
+                        </strong>
                     </p>
-                    <p className='summary-typography'>Level <strong>A</strong> violated: <strong>{summary.levelA}</strong></p>
-                    <p className='summary-typography'>Level <strong>AA</strong>  violated: <strong>{summary.levelAA}</strong></p>
-                    <p className='summary-typography'>Level <strong>AAA</strong>  violated: <strong>{summary.levelAAA}</strong></p>
-                    <p className='summary-typography'>{summary.description}</p>
+                    <p className='summary-typography'>Level <strong>A</strong> violated: 
+                        <strong>
+                            {dummy_data.filter(item => (item.level === "A") && (item.status === "Fail" || item.status === "Warning")).length}
+                        </strong>
+                    </p>
+                    <p className='summary-typography'>Level <strong>AA</strong> violated: 
+                        <strong>
+                            {dummy_data.filter(item => (item.level === "AA") && (item.status === "Fail" || item.status === "Warning")).length}
+                        </strong>
+                    </p>
+                    <p className='summary-typography'>Level <strong>AAA</strong> violated: 
+                        <strong>
+                            {dummy_data.filter(item => (item.level === "AAA") && (item.status === "Fail" || item.status === "Warning")).length}
+                        </strong>
+                    </p>
+                    <p className='summary-typography'>
+                        Summary of WCAG violations based on accessibility evaluation.
+                    </p>
                 </Card>
                 <div className='button-container'>
                     <button className='back-button' onClick={handleBack}>Back</button>
@@ -428,7 +446,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                             <AnimatePresence>
                                 {expandedItems.includes(index) && (
                                     <motion.p
-                                        className='item-description'
+                                        className='item-description2'
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: 'auto' }}
                                         exit={{ opacity: 0, height: 0 }}
