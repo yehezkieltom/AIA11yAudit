@@ -86,7 +86,7 @@ const UploadPage = () => {
         try {
             //${import.meta.env.VITE_API_ENDPOINT_MAIN_DOMAIN}/ai/stream-chat-completion`
         const response = await fetch(
-            `http://localhost:8010/proxy/ai/stream-chat-completion`, {
+            `https://api.leanscope.io/ai/stream-chat-completion`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`,
