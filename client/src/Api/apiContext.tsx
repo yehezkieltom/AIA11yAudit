@@ -3,6 +3,7 @@ import { Guidelines } from '../middlewares/composeMetadataContext'
 import Metadata from '../interfaces/Metadata';
 import { FilteredImage } from '../Filtering/FilterColor';
 import guideline1_4_3 from '../middlewares/WCAGuidelines/guideline1_4_3';
+import wcagDictionary from '../definitions/WCAGDictionary';
 
 type GuidelineFun = (metadata: Metadata, imageB64Original: string, imagesB64Filtered: FilteredImage[], imageName: string) => Promise<string>
 
@@ -111,23 +112,42 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
             [guideline]: {status: 'pending', response: null, error: null}
         }));
 
+        const payload = JSON.parse(await guidelineFun(designMetadata, originalImage, filteredImagesB64, filename));
+        console.log(payload);
+        console.log("Preparing to send request")
         try {
             const response = await fetch(
-                import.meta.env.API_ENDPOINT_MAIN_DOMAIN, {
+                `${import.meta.env.VITE_API_ENDPOINT_MAIN_DOMAIN}/ai/stream-chat-completion`, {
                     method: 'POST',
-                     headers: { 'Authorization': `Bearer ${import.meta.env.LEANSCOPE_BEARER_TOKEN}`},
-                     body: JSON.parse(await guidelineFun(designMetadata, originalImage, filteredImagesB64, filename))
+                    headers: { 
+                        'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`,
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+                        "Content-Type": "application/json",
+                    },
+                    body: payload
                 }
             );
+            console.log("Request sent, waiting for response from OpenAI")
             if (!response.ok) {
-                throw new Error(`Request ${guideline} failed with status ${response.status}`);
+                throw new Error(`Request ${guideline} failed with status ${response.status}\n${response}`);
             }
 
             const result = await response.json();
 
             setRequests(prev => ({
                 ...prev,
-                [guideline]: {status: 'completed', response: result, error: null}
+                [guideline]: {
+                    status: 'completed', 
+                    response: {
+                        ...result,
+                        open: false,
+                        wcag_num: guideline,
+                        wcag_t: guideline in wcagDictionary ? wcagDictionary[guideline].text : '',
+                        level: guideline in wcagDictionary ? wcagDictionary[guideline].level : '',
+                    },
+                    error: null
+                }
             }));
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error occured';
@@ -135,6 +155,7 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
                 ...prev,
                 [guideline]: {status: 'completed', response: null, error: errorMessage}
             }));
+            console.log(errorMessage)
             return {error : errorMessage}
         }
     }

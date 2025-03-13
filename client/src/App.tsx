@@ -203,7 +203,7 @@ function App() {
           <Routes>
             <Route path='/' element={<UploadPage  />} />
             <Route path='/mark' element={<MarkPage />} />
-            <Route path='/eval' element={<EvalPage  data={exampleDataItem} summary={exampleSummary}/>} />
+            <Route path='/eval' element={<EvalPage  dummy_data={exampleDataItem} summary={exampleSummary}/>} />
           </Routes>
         </ImageProvider>
       </APIProvider>

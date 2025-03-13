@@ -40,32 +40,32 @@ const UploadPage = () => {
         setButtonClicked(false);
 
         {/* Filter Logic */}
-        if(!img) return;
-        try {
-            const res =  await applyColBlindFilter(img);
-            setFilteredImages(res);
-          } catch (error) {
-            console.error('Error applying filter', error);
-        };
+        // if(!img) return;
+        // try {
+        //     const res =  await applyColBlindFilter(img);
+        //     setFilteredImages(res);
+        //   } catch (error) {
+        //     console.error('Error applying filter', error);
+        // };
     
         const imageB64 = img ? getBase64(img) : '';
-     /* //UI Debugging   
+     //UI Debugging   
         console.log(imgURL);
-        console.log(jsonScreen); */
+        // console.log(jsonScreen);
         if(imgURL) {
             setImgURL(imgURL);
         }
-        /* setTimeout(() => {
+        setTimeout(() => {
             setLoading(false);
             navigate('/eval');
         }, 2000); 
-        //end here */
+        //end here
         
         //TODO: handle form and send request
-        await submitDesign(dropdownValues, await imageB64, img.name, filteredImages)
+        // await submitDesign(dropdownValues, await imageB64, img.name, filteredImages)
         
 
-        navigate('/eval')
+        // navigate('/eval')
     }
     const handleBack = () => {
         setButtonClicked(false);
@@ -80,6 +80,36 @@ const UploadPage = () => {
     /* const handleDebug = () => {
         console.log(dropdownValues)
         console.log(jsonScreen)
+    } */
+
+/*     const handleDebugSimpleOpenAIReq = async () => {
+        try {
+            //${import.meta.env.VITE_API_ENDPOINT_MAIN_DOMAIN}/ai/stream-chat-completion`
+        const response = await fetch(
+            `http://localhost:8010/proxy/ai/stream-chat-completion`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`,
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                body: {
+                    "model": "gpt-4o",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "Hello"
+                        }
+                    ]
+                }
+            }
+        );
+        console.log(response);
+        } catch(e) {
+            console.log(e);
+        }
+
+        
     } */
 
     return loading ? ( <LoadingPage /> ) : (
@@ -110,6 +140,9 @@ const UploadPage = () => {
                 {/* for testing */}
                 {/* <button className="start-button" onClick={handleDebug}>
                     check dropdownValues
+                </button> */}
+                {/* <button className="start-button" onClick={handleDebugSimpleOpenAIReq}>
+                    check simple request
                 </button> */}
             </div>        
         </div>

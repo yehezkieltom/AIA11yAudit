@@ -23,15 +23,15 @@ export const composeGeneric = (
     }
 
     return JSON.stringify({
-        'model': import.meta.env.GPT_MODEL,
+        'model': import.meta.env.VITE_GPT_MODEL,
         'max-completion-tokens' : 100,
         'response_format': {
             'type' : 'json_object'
         },
         'images': [
             {
-                'filename': `${imageName}_nofilter`,
-                'base64DataUrl': imageB64Original,
+                'filename': `${imageName}`, //add _nofilter back in later
+                'base64DataUrl': `data:image/png;base64,${imageB64Original}`,
             },
             ...filteredImage
 /*             ...fewShotExamples */
