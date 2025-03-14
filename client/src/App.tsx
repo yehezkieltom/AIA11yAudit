@@ -32,7 +32,7 @@ function App() {
 
   const exampleDataItem = [
     {
-      title: "1 - Alterntaive Text for Images",
+      title: "1 - Alternative Text for Images",
       status: exampleStatus3,
       description: "If images are used for critical navigation or CTA buttons, they must include descriptive alt text to be accessible for screen readers.",
       open: false,
@@ -59,7 +59,7 @@ function App() {
       level: exampleLevel,
     },
     {
-      title: "4 - 'Main Banner (Title & Description) - Tetxt Contrast Issues ",
+      title: "4 - 'Main Banner (Title & Description) - Text Contrast Issues ",
       status: exampleStatus,
       description: "The white text on the banner (`The Polar Bears`) blends into the background, making it hard to read, especially under color blindness filters.",
       open: false,

@@ -341,16 +341,15 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
             const newCheckedItems = { ...prev };
     
             Object.entries(checklistsItems).forEach(([category, guidelines]) => {
-                let categoryChecked = false;
+                let allSubItemsChecked = true;
                 guidelines.forEach(item => {
                     if (violatedWCAGNums.has(item.guideline)) {
                         newCheckedItems[`${category}-${item.guideline}`] = true;
-                        newCheckedItems[category] = true;
+                    } else {
+                        allSubItemsChecked = false;
                     }
                 });
-                if (categoryChecked) {
-                    newCheckedItems[category] = true;
-                }
+                newCheckedItems[category] = allSubItemsChecked;
             });
     
             return newCheckedItems;
