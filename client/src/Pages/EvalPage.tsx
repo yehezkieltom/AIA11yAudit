@@ -23,7 +23,7 @@ interface DataItem {
     status: StatusType;
     description: string;
     open: boolean;
-    wcag_num: string;
+    wcag_num: string[];
     wcag_t: string;
     level: Level;
 }
@@ -331,6 +331,31 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     useEffect(() => {
         setLoading(false)
     },[])
+
+    useEffect(() => {
+        const violatedWCAGNums = new Set(dummy_data
+            .filter(item => item.status === "Fail" || item.status === "Warning" || item.status == "Pass")
+            .flatMap(item => item.wcag_num));
+    
+        setCheckedItems(prev => {
+            const newCheckedItems = { ...prev };
+    
+            Object.entries(checklistsItems).forEach(([category, guidelines]) => {
+                let categoryChecked = false;
+                guidelines.forEach(item => {
+                    if (violatedWCAGNums.has(item.guideline)) {
+                        newCheckedItems[`${category}-${item.guideline}`] = true;
+                        newCheckedItems[category] = true;
+                    }
+                });
+                if (categoryChecked) {
+                    newCheckedItems[category] = true;
+                }
+            });
+    
+            return newCheckedItems;
+        });
+    }, [dummy_data]);
     
 
     return loading ? ( <LoadingPage /> ) : (
@@ -370,9 +395,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                             {dummy_data.filter(item => (item.level === "AAA") && (item.status === "Fail" || item.status === "Warning")).length}
                         </strong>
                     </p>
-                    <p className='summary-typography'>
-                        Summary of WCAG violations based on accessibility evaluation.
-                    </p>
+                    <p className='summary-typography'>{summary.description}</p>
                 </Card>
                 <div className='button-container'>
                     <button className='back-button' onClick={handleBack}>Back</button>

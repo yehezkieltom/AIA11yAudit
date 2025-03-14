@@ -45,7 +45,7 @@ function App() {
       status: exampleStatus2,
       description: "The webpage includes a promotional video (`What is the AHH Effect?`), which seems to be embedded as a YouTube Video, which usually offers automatic captions.",
       open: false,
-      wcag_num: "1.2.1-1.2.3",
+      wcag_num: ["1.2.1","1.2.2", "1.2.3"],
       wcag_t: 'Multimedia Alternatives',
       level: exampleLevel,
     },
@@ -78,7 +78,7 @@ function App() {
     },
     {
       title: "6 - 'Sidebar (Recent Activity) - Small Text & Readability'",
-      status: exampleStatus2,
+      status: exampleStatus3,
       description: "The sidebar text is too small and could be difficult to read, especially when zoomed in (up to 200%)",
       open: false,
       wcag_num: '1.4.4',
@@ -87,7 +87,7 @@ function App() {
     },
     {
       title: "7 - 'UI Layout Might Break on Resize'",
-      status: exampleStatus2,
+      status: exampleStatus3,
       description: "The side navigation and buttons might overlap or shift when resized, affecting usability.",
       open: false,
       wcag_num: '1.4.10',

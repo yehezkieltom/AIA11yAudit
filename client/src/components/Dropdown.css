@@ -49,11 +49,12 @@
     outline-offset: 2px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1400px), (max-height: 800px) {
     .upload-page {
         flex-direction: column;
         align-items: center;
         gap: 2rem;
+        width: 101vw;
     }
 
     .placeholder-area {
