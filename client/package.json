@@ -13,7 +13,9 @@
   "dependencies": {
     "axios": "^1.7.9",
     "color-blind": "^0.1.3",
+    "color-contrast-checker": "^2.1.0",
     "framer-motion": "^12.4.10",
+    "get-image-colors": "^4.0.1",
     "image-filter-color": "^1.0.0",
     "image-filter-core": "^2.0.2",
     "konva": "^9.3.18",
@@ -25,7 +27,8 @@
     "react-konva": "^18.2.10",
     "react-router-dom": "^7.1.1",
     "semantic-ui-react": "^2.1.5",
-    "use-image": "^1.1.1"
+    "use-image": "^1.1.1",
+    "wcag-contrast": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

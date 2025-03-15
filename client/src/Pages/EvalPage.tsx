@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
 import arrowRight from '../assets/svg/arrow-right.svg';
 import LoadingPage from './LoadingPage';
+import { X } from 'lucide-react';
 import { RequestState, useAPI } from '../Api/apiContext';
 import { guidelines } from '../middlewares/composeMetadataContext';
 import wcagDictionary from '../definitions/WCAGDictionary';
@@ -44,7 +45,7 @@ interface EvalPageProps {
 
 const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     const navigate = useNavigate();
-    const { imgURL } = useImageContext();
+    const { imgURL, iconImgURL } = useImageContext();
     //const { isLoading, setIsLoadingExternal, allRequestComplete, requests, resetState } = useAPI();
     const [activeCard, setActiveCard] = useState<"violations" | "checklist" | null>("violations");
     const [selectedStatuses, setSelectedStatuses] = useState<StatusType[]>(['Pass', 'Fail', 'Warning']);
@@ -56,6 +57,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
     const [reports, setReports] = useState<unknown[]>([]);
     const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // const wcagDictionary: Record<string, DataItem> = {
     //     '1.1.1': {
@@ -370,6 +372,25 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                         </div>
                     )}
                 </Card>
+                {isModalOpen && (
+                    <div className='modal-overlay'>
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                    <h3>Contrast Issues</h3>
+                                    <button className='modal-close' onClick={() => setIsModalOpen(false)}>
+                                        <X size={24} color='white'/>
+                                    </button>
+                            </div>
+                            <div className='modal-body'>
+                                {iconImgURL ? (
+                                    <img src={iconImgURL} />
+                                ) : (
+                                    <p> No image there. Please upload one</p>
+                                )} 
+                            </div>  
+                        </div>
+                    </div>
+                )}
                 <Card>
                     <h4 className='summary-title'>Summary</h4>
                     <p className='summary-typography'>
@@ -398,6 +419,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                 </Card>
                 <div className='button-container'>
                     <button className='back-button' onClick={handleBack}>Back</button>
+                    <button className='modal-button' onClick={() => setIsModalOpen(true)}>Show contrast issues</button>
                     <button className="start-button" onClick={handleBack}>
                             Upload 
                             <img src={arrowRight} width="20" height="20"/>
@@ -485,80 +507,116 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                     </ScrollArea>
                     </>
                 ) : (
-                    <ScrollArea>
-                        <h3 className='summary-title'>Accessibility Checklist</h3>
-                        {Object.entries(checklistsItems).map(([category, guidelines]) => (
-                            <div key={category} className='element-tile'>
-                                <div className='item-header' onClick={() => toggleExpandGuideline(category)}>
-                                    <input
-                                        className='custom-checkbox'
-                                        type='checkbox'
-                                        checked={checkedItems[category] || false}
-                                        onChange={() => {
-                                            const allChecked = !checkedItems[category];
-                                            setCheckedItems(prev => {
-                                                const newCheckedItems = { ...prev, [category]: allChecked };
-                                                guidelines.forEach(item => {
-                                                    newCheckedItems[`${category}-${item.guideline}`] = allChecked;
-                                                });
-                                                return newCheckedItems;
+                <>
+                    <div className='filter-container2'>
+                    <div className='filter-row'>
+                        <label className='checkbox-label'>
+                            <input
+                                className='custom-checkbox'
+                                type='checkbox'
+                                checked={selectAll}
+                                onChange={toggleAllFilters}
+                            /> Select All {`(${dummy_data.length})`}
+                        </label>
+                    {(['Pass', 'Fail', 'Warning'] as StatusType[]).map(status => (
+                        <label key={status} className='checkbox-label'>
+                            <input
+                                className='custom-checkbox'
+                                type='checkbox'
+                                checked={selectedStatuses.includes(status)}
+                                onChange={() => toggleStatusFilter(status)}
+                            /> {status} {`(${dummy_data.filter(item => item.status === status).length})`}
+                        </label>
+                    ))}
+                    </div>
+                    <div className='filter-row'>
+                    {(['A', 'AA', 'AAA'] as Level[]).map(level => (
+                        <label key={level} className='checkbox-label'>
+                            <input
+                                className='custom-checkbox'
+                                type='checkbox'
+                                checked={selectedLevels.includes(level)}
+                                onChange={() => toggleLevelFilter(level)}
+                            /> {level} {`(${dummy_data.filter(item => item.level === level).length})`}
+                        </label>
+                    ))}
+                    </div>
+                </div>
+                <ScrollArea>
+                    <h3 className='summary-title'>Accessibility Checklist</h3>
+                    {Object.entries(checklistsItems).map(([category, guidelines]) => (
+                        <div key={category} className='element-tile'>
+                            <div className='item-header' onClick={() => toggleExpandGuideline(category)}>
+                                <input
+                                    className='custom-checkbox'
+                                    type='checkbox'
+                                    checked={checkedItems[category] || false}
+                                    onChange={() => {
+                                        const allChecked = !checkedItems[category];
+                                        setCheckedItems(prev => {
+                                            const newCheckedItems = { ...prev, [category]: allChecked };
+                                            guidelines.forEach(item => {
+                                                newCheckedItems[`${category}-${item.guideline}`] = allChecked;
                                             });
-                                        }}
-                                    />
-                                    <h3 className='font-bold text-md'>{`Guideline ${category}`}</h3>
-                                    <div className='expand-icon'>
-                                        {expandedGuideline.includes(category) ? <ChevronUp size={24} color='black'/> : <ChevronDown size={24} color='black'/>}
-                                    </div>
+                                            return newCheckedItems;
+                                        });
+                                    }}
+                                />
+                                <h3 className='font-bold text-md'>{`Guideline ${category}`}</h3>
+                                <div className='expand-icon'>
+                                    {expandedGuideline.includes(category) ? <ChevronUp size={24} color='black'/> : <ChevronDown size={24} color='black'/>}
                                 </div>
-
-                                <AnimatePresence>
-                                    {expandedGuideline.includes(category) && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                        >
-                                            {guidelines.map((item, index) => (
-                                                <div key={index} className='element-tile2'>
-                                                    <div className='item-header'>
-                                                        <input
-                                                            type='checkbox'
-                                                            id={`checklist-${item.guideline}-${index}`}
-                                                            name={`checklist-${item.guideline}-${index}`}
-                                                            checked={checkedItems[`${category}-${item.guideline}`] || false}
-                                                            onChange={() => toggleChecklistItem(`${category}-${item.guideline}`, category)}
-                                                        />
-                                                        <label className='item-description' htmlFor={`checklist-${item.guideline}-${index}`}>
-                                                            <div className='level-circle'>       
-                                                            {`${item.level}`}
-                                                            </div>
-                                                            {`${item.guideline}: ${item.text}`}
-                                                        </label>
-                                                        <div className='expand-icon' onClick={() => toggleExpandChecklist(`${item.guideline}-${index}`)}>
-                                                            {expandedChecklist.includes(`${item.guideline}-${index}`) ? <ChevronUp size={24} color='black'/> : <ChevronDown size={24} color='black'/>}
-                                                        </div>
-                                                    </div>
-
-                                                    <AnimatePresence>
-                                                        {expandedChecklist.includes(`${item.guideline}-${index}`) && (
-                                                            <motion.p
-                                                                className='item-description'
-                                                                initial={{ opacity: 0, height: 0 }}
-                                                                animate={{ opacity: 1, height: 'auto' }}
-                                                                exit={{ opacity: 0, height: 0 }}
-                                                            >
-                                                                <span>{item.details}</span>
-                                                            </motion.p>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </div>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
                             </div>
-                        ))}
-                    </ScrollArea>
+
+                            <AnimatePresence>
+                                {expandedGuideline.includes(category) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                    >
+                                        {guidelines.map((item, index) => (
+                                            <div key={index} className='element-tile2'>
+                                                <div className='item-header'>
+                                                    <input
+                                                        type='checkbox'
+                                                        id={`checklist-${item.guideline}-${index}`}
+                                                        name={`checklist-${item.guideline}-${index}`}
+                                                        checked={checkedItems[`${category}-${item.guideline}`] || false}
+                                                        onChange={() => toggleChecklistItem(`${category}-${item.guideline}`, category)}
+                                                    />
+                                                    <label className='item-description' htmlFor={`checklist-${item.guideline}-${index}`}>
+                                                        <div className='level-circle'>       
+                                                        {`${item.level}`}
+                                                        </div>
+                                                        {`${item.guideline}: ${item.text}`}
+                                                    </label>
+                                                    <div className='expand-icon' onClick={() => toggleExpandChecklist(`${item.guideline}-${index}`)}>
+                                                        {expandedChecklist.includes(`${item.guideline}-${index}`) ? <ChevronUp size={24} color='black'/> : <ChevronDown size={24} color='black'/>}
+                                                    </div>
+                                                </div>
+
+                                                <AnimatePresence>
+                                                    {expandedChecklist.includes(`${item.guideline}-${index}`) && (
+                                                        <motion.p
+                                                            className='item-description'
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                        >
+                                                            <span>{item.details}</span>
+                                                        </motion.p>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    ))}
+                </ScrollArea>
+                </>
                 )}
                 </motion.div>
                 </AnimatePresence>

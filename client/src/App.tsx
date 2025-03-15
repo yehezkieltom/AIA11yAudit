@@ -7,6 +7,7 @@ import Topbar from './components/Topbar.tsx';
 import UploadPage from './Pages/UploadPage.tsx';
 import MarkPage from './Pages/MarkPage.tsx';
 import EvalPage from './Pages/EvalPage.tsx';
+import FilterPage from './Pages/FilterPage.tsx';
 import { StatusType, Level } from './Pages/EvalPage.tsx';
 import { ImageProvider } from './components/ImageContext.tsx';
 import LoadingPage from './Pages/LoadingPage.tsx';
@@ -186,6 +187,8 @@ function App() {
             <Route path='/' element={<UploadPage  />} />
             <Route path='/mark' element={<MarkPage />} />
             <Route path='/eval' element={<EvalPage  dummy_data={exampleDataItem} summary={exampleSummary}/>} />
+            <Route path='/loading' element={<LoadingPage />} />
+            <Route path='/filter' element={<FilterPage />} />
           </Routes>
         </ImageProvider>
       </APIProvider>
