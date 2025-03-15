@@ -82,35 +82,31 @@ const UploadPage = () => {
         console.log(jsonScreen)
     } */
 
-/*     const handleDebugSimpleOpenAIReq = async () => {
+    const handleDebugSimpleOpenAIReq = async () => {
         try {
-            //${import.meta.env.VITE_API_ENDPOINT_MAIN_DOMAIN}/ai/stream-chat-completion`
-        const response = await fetch(
-            `https://api.leanscope.io/ai/stream-chat-completion`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`,
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
-                },
-                body: {
-                    "model": "gpt-4o",
-                    "messages": [
-                        {
+            const response = await fetch(
+                `https://api.leanscope.io/ai/stream-chat-completion`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`
+                    },
+                    body: {
+                        "model": "gpt-4o",
+                        "messages": [{
                             "role": "user",
                             "content": "Hello"
-                        }
-                    ]
+                        }]
+                    }
                 }
-            }
-        );
-        console.log(response);
+            );
+            console.log(response);
+
         } catch(e) {
             console.log(e);
         }
 
         
-    } */
+    }
 
     return loading ? ( <LoadingPage /> ) : (
         <div className="upload-page">
@@ -141,9 +137,9 @@ const UploadPage = () => {
                 {/* <button className="start-button" onClick={handleDebug}>
                     check dropdownValues
                 </button> */}
-                {/* <button className="start-button" onClick={handleDebugSimpleOpenAIReq}>
+                <button className="start-button" onClick={handleDebugSimpleOpenAIReq}>
                     check simple request
-                </button> */}
+                </button>
             </div>        
         </div>
     );
