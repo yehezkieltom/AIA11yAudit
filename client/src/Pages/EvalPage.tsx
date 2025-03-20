@@ -11,15 +11,14 @@ import { useNavigate } from "react-router-dom";
 import arrowRight from '../assets/svg/arrow-right.svg';
 import LoadingPage from './LoadingPage';
 import { X } from 'lucide-react';
-import { RequestState, useAPI } from '../Api/apiContext';
-import { guidelines } from '../middlewares/composeMetadataContext';
-import wcagDictionary from '../definitions/WCAGDictionary';
+import { useAPI } from '../Api/apiContext';
+import checklistsItems from '../definitions/checklistsItems';
 
 
 export type StatusType = 'Pass' | 'Fail' | 'Warning' | null;
 export type Level = 'A' | 'AA' | 'AAA';
 
-interface DataItem {
+export interface DataItem {
     title: string;
     status: StatusType;
     description: string;
@@ -46,7 +45,7 @@ interface EvalPageProps {
 const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     const navigate = useNavigate();
     const { imgURL, iconImgURL } = useImageContext();
-    //const { isLoading, setIsLoadingExternal, allRequestComplete, requests, resetState } = useAPI();
+    const { isLoading, requests, resetState } = useAPI();
     const [activeCard, setActiveCard] = useState<"violations" | "checklist" | null>("violations");
     const [selectedStatuses, setSelectedStatuses] = useState<StatusType[]>(['Pass', 'Fail', 'Warning']);
     const [selectedLevels, setSelectedLevels] = useState<Level[]>(['A', 'AA', 'AAA']);
@@ -55,147 +54,13 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     const [expandedChecklist, setExpandedChecklist] = useState<string[]>([]);
     const [expandedGuideline, setExpandedGuideline] = useState<string[]>([]);
     const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-    const [reports, setReports] = useState<unknown[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [reports, setReports] = useState<DataItem[]>([]);
+    // const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [filterData, setFilterData] = useState<DataItem[]>([]);
 
-    // const wcagDictionary: Record<string, DataItem> = {
-    //     '1.1.1': {
-    //         title: "Non-text Content",
-    //         status: null,
-    //         description: "Ensure all non-text content has a text alternative, including images, charts, graphs, and multimedia elements.",
-    //         open: true,
-    //         wcag_num: 1.1,
-    //         wcag_t: "Non-text Content",
-    //         level: "A",
-    //     },
-    //     '1.4.1': {
-    //         title: "Use of Color",
-    //         status: null,
-    //         description: "Ensure color is not the sole means of conveying information.",
-    //         open: true,
-    //         wcag_num: 1.4,
-    //         wcag_t: "Use of Color",
-    //         level: "A",
-    //     },
-    //     '1.4.3': {
-    //         title: "Contrast (Minimum)",
-    //         status: null,
-    //         description: "Ensure text has a contrast ratio of at least 4.5:1 (or 3:1 for large text).",
-    //         open: true,
-    //         wcag_num: 1.4,
-    //         wcag_t: "Contrast (Minimum)",
-    //         level: "AA",
-    //     },
-    //     '1.4.4': {
-    //         title: "Resize Text",
-    //         status: null,
-    //         description: "Text should be resizable up to 200% without loss of content or functionality.",
-    //         open: true,
-    //         wcag_num: 1.4,
-    //         wcag_t: "Resize Text",
-    //         level: "AA",
-    //     },
-    //     '1.4.10': {
-    //         title: "Reflow",
-    //         status: null,
-    //         description: "Ensure content remains usable at 400% zoom without requiring horizontal scrolling.",
-    //         open: true,
-    //         wcag_num: 1.4,
-    //         wcag_t: "Reflow",
-    //         level: "AA",
-    //     },
-    //     '1.4.11': {
-    //         title: "Non-text Contrast",
-    //         status: null,
-    //         description: "Ensure UI elements like buttons, form controls, and graphical elements have sufficient contrast (minimum 3:1).",
-    //         open: true,
-    //         wcag_num: 1.4,
-    //         wcag_t: "Non-text Contrast",
-    //         level: "AA",
-    //     },
-    //     '1.2.1': {
-    //         title: "Audio-only and Video-only (Prerecorded)",
-    //         status: null,
-    //         description: "Provide text alternatives for audio and video content.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Audio-only and Video-only",
-    //         level: "A",
-    //     },
-    //     '1.2.2': {
-    //         title: "Captions (Prerecorded)",
-    //         status: null,
-    //         description: "Ensure that prerecorded videos have captions.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Captions (Prerecorded)",
-    //         level: "A",
-    //     },
-    //     '1.2.3': {
-    //         title: "Audio Description or Media Alternative (Prerecorded)",
-    //         status: null,
-    //         description: "Provide an audio description or text alternative for video content.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Audio Description",
-    //         level: "A",
-    //     },
-    //     '1.2.4': {
-    //         title: "Captions (Live)",
-    //         status: null,
-    //         description: "Live multimedia presentations should include captions.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Captions (Live)",
-    //         level: "AA",
-    //     },
-    //     '1.2.5': {
-    //         title: "Audio Description (Prerecorded)",
-    //         status: null,
-    //         description: "Ensure an audio description track is available for prerecorded video content.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Audio Description",
-    //         level: "AA",
-    //     },
-    //     '1.2.6': {
-    //         title: "Sign Language (Prerecorded)",
-    //         status: null,
-    //         description: "Consider embedding a sign language interpreter video alongside the main content.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Sign Language (Prerecorded)",
-    //         level: "AAA",
-    //     },
-    //     '1.2.7': {
-    //         title: "Extended Audio Description (Prerecorded)",
-    //         status: null,
-    //         description: "For complex visual content, allow additional audio descriptions beyond the default.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Extended Audio Description",
-    //         level: "AAA",
-    //     },
-    //     '1.2.8': {
-    //         title: "Media Alternative (Prerecorded)",
-    //         status: null,
-    //         description: "Ensure text-based alternatives are available for all multimedia content.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Media Alternative",
-    //         level: "AAA",
-    //     },
-    //     '1.2.9': {
-    //         title: "Audio-only (Live)",
-    //         status: null,
-    //         description: "For live broadcasts, provide real-time captions or text-based descriptions.",
-    //         open: true,
-    //         wcag_num: 1.2,
-    //         wcag_t: "Audio-only (Live)",
-    //         level: "AAA",
-    //     }
-    // };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const hell = dummy_data
 
     const toggleExpand = (index: number) => {
         setExpandedItems(prev => 
@@ -256,86 +121,52 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     };
 
 
-    const filterData = dummy_data.filter(item => 
+    // const filterData = dummy_data.filter(item => 
+    //     selectedStatuses.includes(item.status) && selectedLevels.includes(item.level)
+    // );
+
+
+    useEffect(() => {
+        setFilterData(Object.values(reports).filter((item: DataItem) => (
         selectedStatuses.includes(item.status) && selectedLevels.includes(item.level)
-    );
+    )));
+    }, [reports, selectedLevels, selectedStatuses])
 
-    // const filterData = Object.values(requests).filter((item: RequestState) => {
-    //     selectedStatuses.includes(item.response.status) && selectedLevels.includes(item.response.level)
-    // });
-
-    const checklistsItems: Record<string, { guideline: string; text: string; details: string, level: Level }[]> = {
-        "1.1": [
-            { guideline: "1.1.1", text: "Ensure all non-text content has a text alternative.", details: "This includes images, charts, graphs, audio files, and videos. Provide alt text or transcripts where applicable." , level: "A"},
-        ],
-        "1.2": [
-            { guideline: "1.2.1", text: "Provide alternatives for time-based media such as captions and transcripts.", details: "Ensure that users with hearing impairments can access media content via text-based alternatives.", level: "A" },
-            { guideline: "1.2.2", text: "Ensure synchronized captions for pre-recorded audio and video.", details: "Captions should be accurate, synchronized with speech, and include relevant non-verbal sounds.", level: "A" },
-            { guideline: "1.2.3", text: "Provide an audio description for pre-recorded video content.", details: "This helps visually impaired users by describing visual elements in a video.", level: "A" },
-            { guideline: "1.2.4", text: "Include captions for live multimedia presentations.", details: "Live captions should be provided for any real-time streaming or broadcast events.", level: "A" },
-            { guideline: "1.2.5", text: "Ensure an audio description track is available for synchronized media.", details: "For videos, provide an alternative audio track describing important visual content.", level: "A" },
-            { guideline: "1.2.6", text: "Provide sign language interpretation for pre-recorded audio content.", details: "Consider embedding a sign language interpreter video alongside the main content.", level: "A" },
-            { guideline: "1.2.7", text: "Extend audio descriptions for media when necessary.", details: "For complex visual content, allow additional audio descriptions beyond the default.", level: "AA" },
-            { guideline: "1.2.8", text: "Offer text alternatives for live video content.", details: "For live broadcasts, provide real-time captions or text-based descriptions.", level: "AA" },
-            { guideline: "1.2.9", text: "Ensure sign language interpretation for live media.", details: "If possible, include a live interpreter on-screen during broadcasts.", level: "AAA" }
-        ],
-        "1.4": [
-            { guideline: "1.4.1", text: "Use of Color", details: "Ensure color is not the sole means of conveying information, distinguishing elements, or prompting action.", level: "A" },
-            { guideline: "1.4.3", text: "Contrast (Minimum)", details: "Ensure text and images of text have a contrast ratio of at least 4.5:1 (or 3:1 for large text).", level: "AA" },
-            { guideline: "1.4.4", text: "Allow text resizing without loss of content or functionality.", details: "Ensure that users can increase font sizes without breaking the layout or hiding essential content.", level: "AA" },
-            { guideline: "1.4.10", text: "Reflow", details: "Ensure content can be presented without loss of information or functionality, and without requiring scrolling in two dimensions for text content at 400% zoom.", level: "AA" },
-            { guideline: "1.4.11", text: "Non-text Contrast", details: "Ensure that graphical elements essential for understanding content have a contrast ratio of at least 3:1.", level: "AA" }
-        ]
-    };
 
 
     const handleBack = () => {
-        //dummy
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            navigate('/');
-        }, 2000);
+        ////dummy
+        // setLoading(true);
+        // setTimeout(() => {
+        //     setLoading(false);
+        //     navigate('/');
+        // }, 2000);
 
-        ////actual
-        // resetState();
-        // navigate('/');
+        //actual
+        resetState();
+        navigate('/');
     }
 
+    useEffect(() => {
+        // const reportItem = []
+        //TODO: check if it still problematic
+        setReports([])
+        for(const requestState of Object.values(requests)) {
+            // reportItem.push(requestState.response)
+            setReports(prev => [
+                ...prev,
+                ...requestState.response
+            ])
+        }
 
-    // useEffect(() => {
-    //     //make sure once the parsing is done, you will only do it once
-    //     if (allRequestComplete()) {
-    //         // //parse the result
-    //         // for (const requestId in requests) {
-    //         //     setReports(prev => ([
-    //         //         ...prev,
-    //         //         {
-    //         //             /* AI response already has title, status, and description */
-    //         //             ...request[requestId].response
-    //         //             open: false,
-    //         //             wcag_num: requestId, // the requestId here is a guideline criteria code
-    //         //             wcag_t: requestId in wcagDictionary? wcagDictionary[requestId].text : '',
-    //         //             level: requestId in wcagDictionary? wcagDictionary[requestId].text : '',
-    //         //         }
-    //         //     ]))
-    //         // }
-    //         for (const requestId in requests) {
-    //             setReports(prev => ([
-    //                 ...prev,
-    //                 {...requests[requestId].response}
-    //             ]))
-    //         }
-    //         setIsLoadingExternal(false);
-    //     }
-    // }, [allRequestComplete, setIsLoadingExternal, requests])
+        console.log("result read from EvalPage.tsx")
+        console.log(requests)
+        console.log('\n')
+    }, [requests])
 
     useEffect(() => {
-        setLoading(false)
-    },[])
 
-    useEffect(() => {
-        const violatedWCAGNums = new Set(dummy_data
+        const violatedWCAGNums = new Set(reports
             .filter(item => item.status === "Fail" || item.status === "Warning" || item.status == "Pass")
             .flatMap(item => item.wcag_num));
     
@@ -356,10 +187,26 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     
             return newCheckedItems;
         });
-    }, [dummy_data]);
+        console.log("flatten result read from EvalPage.tsx")
+        console.log(reports)
+        console.log('\n')
+        console.log("violatedWCAGNums from EvalPage.tsx")
+        console.log(violatedWCAGNums)
+        console.log('\n')
+
+        
+    }, [reports]);
+
+
+    //debug
+    useEffect(() => {
+        console.log("checkedItems from EvalPage.tsx")
+        console.log(checkedItems)
+        console.log('\n')
+    }, [checkedItems])
     
 
-    return loading ? ( <LoadingPage /> ) : (
+    return isLoading ? ( <LoadingPage /> ) : (
         <div className='container'>
             <div className='left-section'>
                 <Card>
@@ -396,23 +243,23 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                     <p className='summary-typography'>
                         Passed elements: 
                         <strong>
-                            {dummy_data.filter(item => item.status === "Pass").length}/{dummy_data.length} 
-                            ({((dummy_data.filter(item => item.status === "Pass").length / dummy_data.length) * 100).toFixed(0)}%)
+                            {reports.filter(item => item.status === "Pass").length}/{reports.length} 
+                            ({((reports.filter(item => item.status === "Pass").length / reports.length) * 100).toFixed(0)}%)
                         </strong>
                     </p>
                     <p className='summary-typography'>Level <strong>A</strong> violated: 
                         <strong>
-                            {dummy_data.filter(item => (item.level === "A") && (item.status === "Fail" || item.status === "Warning")).length}
+                            {reports.filter(item => (item.level === "A") && (item.status === "Fail" || item.status === "Warning")).length}
                         </strong>
                     </p>
                     <p className='summary-typography'>Level <strong>AA</strong> violated: 
                         <strong>
-                            {dummy_data.filter(item => (item.level === "AA") && (item.status === "Fail" || item.status === "Warning")).length}
+                            {reports.filter(item => (item.level === "AA") && (item.status === "Fail" || item.status === "Warning")).length}
                         </strong>
                     </p>
                     <p className='summary-typography'>Level <strong>AAA</strong> violated: 
                         <strong>
-                            {dummy_data.filter(item => (item.level === "AAA") && (item.status === "Fail" || item.status === "Warning")).length}
+                            {reports.filter(item => (item.level === "AAA") && (item.status === "Fail" || item.status === "Warning")).length}
                         </strong>
                     </p>
                     <p className='summary-typography'>{summary.description}</p>
@@ -449,7 +296,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                                     type='checkbox'
                                     checked={selectAll}
                                     onChange={toggleAllFilters}
-                                /> Select All {`(${dummy_data.length})`}
+                                /> Select All {`(${reports.length})`}
                             </label>
                         {(['Pass', 'Fail', 'Warning'] as StatusType[]).map(status => (
                             <label key={status} className='checkbox-label'>
@@ -458,7 +305,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                                     type='checkbox'
                                     checked={selectedStatuses.includes(status)}
                                     onChange={() => toggleStatusFilter(status)}
-                                /> {status} {`(${dummy_data.filter(item => item.status === status).length})`}
+                                /> {status} {`(${reports.filter(item => item.status === status).length})`}
                             </label>
                         ))}
                         </div>
@@ -470,7 +317,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                                     type='checkbox'
                                     checked={selectedLevels.includes(level)}
                                     onChange={() => toggleLevelFilter(level)}
-                                /> {level} {`(${dummy_data.filter(item => item.level === level).length})`}
+                                /> {level} {`(${reports.filter(item => item.level === level).length})`}
                             </label>
                         ))}
                         </div>
@@ -516,7 +363,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                                 type='checkbox'
                                 checked={selectAll}
                                 onChange={toggleAllFilters}
-                            /> Select All {`(${dummy_data.length})`}
+                            /> Select All {`(${reports.length})`}
                         </label>
                     {(['Pass', 'Fail', 'Warning'] as StatusType[]).map(status => (
                         <label key={status} className='checkbox-label'>
@@ -525,7 +372,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                                 type='checkbox'
                                 checked={selectedStatuses.includes(status)}
                                 onChange={() => toggleStatusFilter(status)}
-                            /> {status} {`(${dummy_data.filter(item => item.status === status).length})`}
+                            /> {status} {`(${reports.filter(item => item.status === status).length})`}
                         </label>
                     ))}
                     </div>
@@ -537,7 +384,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                                 type='checkbox'
                                 checked={selectedLevels.includes(level)}
                                 onChange={() => toggleLevelFilter(level)}
-                            /> {level} {`(${dummy_data.filter(item => item.level === level).length})`}
+                            /> {level} {`(${reports.filter(item => item.level === level).length})`}
                         </label>
                     ))}
                     </div>

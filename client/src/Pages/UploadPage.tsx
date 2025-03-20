@@ -14,8 +14,15 @@ import { useAPI } from "../Api/apiContext";
 import { hex as wcagContrast} from 'wcag-contrast';
 import { constrainedMemory } from "process";
 import { color } from "framer-motion";
+import OpenAI from "openai";
+
+
 
 const UploadPage = () => {
+    // const client = new OpenAI({
+    //     apiKey: import.meta.env.VITE_OPENAI_BEARER_TOKEN,
+    //     dangerouslyAllowBrowser: true
+    // });
     const { submitDesign } = useAPI();
     const [img, setImg] = useState<File | null>(null);
     const [filteredImages, setFilteredImages] = useState<FilteredImage[]>([]);
@@ -184,15 +191,15 @@ const UploadPage = () => {
         const processedImg = await overlayIcons(img, issues);
         setIconImg(processedImg);
 
-
+        let cbFilteredImage = [] as FilteredImage[];
         {/* Filter Logic */}
-        // if(!img) return;
-        // try {
-        //     const res =  await applyColBlindFilter(img);
-        //     setFilteredImages(res);
-        //   } catch (error) {
-        //     console.error('Error applying filter', error);
-        // };
+        if(!img) return;
+        try {
+            cbFilteredImage =  await applyColBlindFilter(img);
+            // setFilteredImages(res);
+          } catch (error) {
+            console.error('Error applying filter', error);
+        };
     
         const imageB64 = img ? getBase64(img) : '';
      //UI Debugging   
@@ -206,17 +213,17 @@ const UploadPage = () => {
             setIconImgURL(processedImg);
         }
 
-        setTimeout(() => {
-            setLoading(false);
-            navigate('/eval');
-        }, 2000); 
+        // setTimeout(() => {
+        //     setLoading(false);
+        //     navigate('/eval');
+        // }, 2000); 
         //end here
         
         //TODO: handle form and send request
-        // await submitDesign(dropdownValues, await imageB64, img.name, filteredImages)
+        await submitDesign(dropdownValues, await imageB64, img.name, cbFilteredImage)
         
 
-        // navigate('/eval')
+        navigate('/eval')
     }
     const handleBack = () => {
         setButtonClicked(false);
@@ -232,8 +239,8 @@ const UploadPage = () => {
         console.log(dropdownValues)
         console.log(jsonScreen)
     } */
-
-    const handleDebugSimpleOpenAIReq = async () => {
+ 
+/*     const handleDebugSimpleOpenAIReq = async () => {
         try {
             const response = await fetch(
                 `https://api.leanscope.io/ai/stream-chat-completion`, {
@@ -241,25 +248,33 @@ const UploadPage = () => {
                     headers: {
                         'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`
                     },
-                    body: {
+                    body: JSON.stringify({
                         "model": "gpt-4o",
                         "messages": [{
                             "role": "user",
                             "content": "Hello"
                         }]
-                    }
+                    }) //still returning a server error
                 }
             );
             console.log(response);
 
         } catch(e) {
             console.log(e);
-        }
+        }        
+    } */
+ 
+    // const handleDebugSimpleOpenAIReq = async () => {
+    //     const completion = await client.chat.completions.create({
+    //         "model": "gpt-4o",
+    //         "messages": [{
+    //             "role": "user",
+    //             "content": "Hello"
+    //         }]
+    //     });
 
-        
-    }
-
-    console.log()
+    //     console.log(completion.choices[0].message.content);
+    // }
 
     return loading ? ( <LoadingPage /> ) : (
         <div className="upload-page">
@@ -290,9 +305,9 @@ const UploadPage = () => {
                 {/* <button className="start-button" onClick={handleDebug}>
                     check dropdownValues
                 </button> */}
-                <button className="start-button" onClick={handleDebugSimpleOpenAIReq}>
+                {/* <button className="start-button" onClick={handleDebugSimpleOpenAIReq}>
                     check simple request
-                </button>
+                </button> */}
             </div>        
         </div>
     );
