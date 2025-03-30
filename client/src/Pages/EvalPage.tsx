@@ -13,6 +13,7 @@ import LoadingPage from './LoadingPage';
 import { X } from 'lucide-react';
 import { useAPI } from '../Api/apiContext';
 import checklistsItems from '../definitions/checklistsItems';
+import OpenAI from 'openai';
 
 
 export type StatusType = 'Pass' | 'Fail' | 'Warning' | null;
@@ -42,10 +43,29 @@ interface EvalPageProps {
     summary: Summary;
 }
 
-const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
+const generateSummary = async (openai: OpenAI, input: string) : Promise<string> => {
+    const response = await openai.chat.completions.create({
+        model: import.meta.env.VITE_GPT_MODEL,
+        messages: [
+            {
+                role: 'system',
+                content: "You are provided with stringified JSON object containing reports of UI analysis based on WCAG. Based on that, generate a short summary. Focus on the report of failing element and create a short summary of these in paragraph. Afterwards, you can briefly mention on passing elements. If none are failing, you can tell the user briefly that they have no particular problem with the WCAG Category. Structure and sort the report in the WCAG Guideline order. Create new line with '\\n' for each WCAG Guideline. Use proper english text structure. Avoid using special formatting"
+            },
+            {
+                role: 'user',
+                content: input
+            }
+        ]
+    })
+
+    const description =  response.choices[0].message.content
+    return typeof(description) === "string" ? description : 'An error has occured while requesting summary.'
+}
+
+const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, dummy_summary }) => {
     const navigate = useNavigate();
     const { imgURL, iconImgURL } = useImageContext();
-    const { isLoading, requests, resetState } = useAPI();
+    const { isLoading, requests, openaiClient, resetState } = useAPI();
     const [activeCard, setActiveCard] = useState<"violations" | "checklist" | null>("violations");
     const [selectedStatuses, setSelectedStatuses] = useState<StatusType[]>(['Pass', 'Fail', 'Warning']);
     const [selectedLevels, setSelectedLevels] = useState<Level[]>(['A', 'AA', 'AAA']);
@@ -58,9 +78,10 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     // const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filterData, setFilterData] = useState<DataItem[]>([]);
+    const [summary, setSummary] = useState<Summary>({} as Summary);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const hell = dummy_data
+    const hell = [dummy_data, dummy_summary]
 
     const toggleExpand = (index: number) => {
         setExpandedItems(prev => 
@@ -150,6 +171,27 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     useEffect(() => {
         // const reportItem = []
         //TODO: check if it still problematic
+
+        const fillSummary = async () => {
+            // console.log("result read from EvalPage.tsx")
+            // console.log(requests)
+            // console.log('\n')
+
+            //Generate summary
+            if (JSON.stringify(requests) != '{}') {
+                const response = await generateSummary(openaiClient, JSON.stringify(requests))
+                // console.log("Summary from evalpage:")
+                // console.log(response)
+                setSummary({
+                    passed: 0,
+                    total: 0,
+                    levelA: 0,
+                    levelAA: 0,
+                    levelAAA: 0,
+                    description: response
+                })
+            }
+        }
         setReports([])
         for(const requestState of Object.values(requests)) {
             // reportItem.push(requestState.response)
@@ -158,11 +200,9 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
                 ...requestState.response
             ])
         }
+        fillSummary()
 
-        console.log("result read from EvalPage.tsx")
-        console.log(requests)
-        console.log('\n')
-    }, [requests])
+    }, [requests, openaiClient])
 
     useEffect(() => {
 
@@ -187,23 +227,24 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, summary }) => {
     
             return newCheckedItems;
         });
-        console.log("flatten result read from EvalPage.tsx")
-        console.log(reports)
-        console.log('\n')
-        console.log("violatedWCAGNums from EvalPage.tsx")
-        console.log(violatedWCAGNums)
-        console.log('\n')
+        // console.log("flatten result read from EvalPage.tsx")
+        // console.log(reports)
+        // console.log('\n')
+        // console.log("violatedWCAGNums from EvalPage.tsx")
+        // console.log(violatedWCAGNums)
+        // console.log('\n')
 
         
     }, [reports]);
 
 
-    //debug
-    useEffect(() => {
-        console.log("checkedItems from EvalPage.tsx")
-        console.log(checkedItems)
-        console.log('\n')
-    }, [checkedItems])
+    // //debug
+    // useEffect(() => {
+    //     console.log("checkedItems from EvalPage.tsx")
+    //     console.log(checkedItems)
+    //     console.log('\n')
+    // }, [checkedItems])
+
     
 
     return isLoading ? ( <LoadingPage /> ) : (

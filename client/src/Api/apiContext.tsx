@@ -6,6 +6,9 @@ import guideline1_4_3 from '../middlewares/WCAGuidelines/guideline1_4_3';
 import wcagDictionary from '../definitions/WCAGDictionary';
 import OpenAI from 'openai';
 import { DataItem } from '../Pages/EvalPage';
+import guideline1_4_1 from '../middlewares/WCAGuidelines/guideline1_4_1';
+import guideline1_1_1 from '../middlewares/WCAGuidelines/guideline1_1_1';
+import guideline1_4_11 from '../middlewares/WCAGuidelines/guideline1_4_11';
 
 type GuidelineFun = (metadata: Metadata, imageB64Original: string, imagesB64Filtered: FilteredImage[], imageName: string) => Promise<object>
 
@@ -30,6 +33,7 @@ export interface APIContextType {
     designMetadata: Metadata;
     requests: RequestsState;
     isLoading: boolean;
+    openaiClient: OpenAI
     setIsLoadingExternal: (value: boolean) => void;
     allRequestComplete: () => boolean;
     submitDesign: (
@@ -82,9 +86,15 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
 
         try {
             const promises = [
-                sendRequest('1.4.3', guideline1_4_3, originalImageB64, filename, filteredImagesB64)
+                sendRequest('1.1.1', guideline1_1_1, originalImageB64, filename, filteredImagesB64),
+                sendRequest('1.4.1', guideline1_4_1, originalImageB64, filename, filteredImagesB64),
+                sendRequest('1.4.3', guideline1_4_3, originalImageB64, filename, filteredImagesB64),
+                sendRequest('1.4.11', guideline1_4_11, originalImageB64, filename, filteredImagesB64)
             ];
-            await Promise.allSettled(promises);
+            await Promise.allSettled(promises).then(() => {
+                console.log('Promises returned but request probably not yet set')
+                console.log(JSON.stringify(requests))
+            });
         } finally {
             setIsLoading(false);
             // console.log(JSON.stringify(requests))
@@ -107,8 +117,8 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
         }));
 
         const payload = await guidelineFun(designMetadata, originalImage, filteredImagesB64, filename);
-        console.log(payload);
-        console.log("Preparing to send request")
+        // console.log(payload);
+        // console.log("Preparing to send request")
         try {
             // const response = await fetch(
             //     `${import.meta.env.VITE_API_ENDPOINT_MAIN_DOMAIN}/ai/stream-chat-completion`, {
@@ -126,7 +136,7 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
             //direct OpenAI access
             const response = await openaiClient.chat.completions.create(payload) //trust me dude
 
-            console.log("Request sent, waiting for response from OpenAI")
+            // console.log("Request sent, waiting for response from OpenAI")
             // if (!completion.choices[0].) {
             //     throw new Error(`Request ${guideline} failed with status ${response.status}\n${response}`);
             // }
@@ -142,7 +152,7 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
 
             result.result.forEach(element => {
                 expandedResult.push({
-                    ...element,
+                    ...element, //including title, description, status
                     open: false,
                     wcag_num: guideline,
                     wcag_t: guideline in wcagDictionary ? wcagDictionary[guideline].text : '',
@@ -150,9 +160,9 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
                 })
             });
 
-            console.log("Result from apiContext.tsx")
-            console.log(expandedResult);
-            console.log('\n');
+            // console.log("Result from apiContext.tsx")
+            // console.log(expandedResult);
+            // console.log('\n');
 
             setRequests(prev => ({
                 ...prev,
@@ -185,6 +195,7 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
             designMetadata,
             requests,
             isLoading,
+            openaiClient,
             setIsLoadingExternal,
             allRequestComplete,
             submitDesign,

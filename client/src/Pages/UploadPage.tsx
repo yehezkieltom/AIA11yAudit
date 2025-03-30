@@ -45,20 +45,20 @@ const UploadPage = () => {
         return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
     };
 
-    const getMostFrequentColor = (data: Uint8ClampedArray) => {
-        const colorMap = new Map<string, number>();
+    // const getMostFrequentColor = (data: Uint8ClampedArray) => {
+    //     const colorMap = new Map<string, number>();
 
-        for (let i = 0; i < data.length; i += 4) {
-            const hex = rgbToHex(data[i], data[i + 1], data[i + 2]);
-            colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
-        }
+    //     for (let i = 0; i < data.length; i += 4) {
+    //         const hex = rgbToHex(data[i], data[i + 1], data[i + 2]);
+    //         colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
+    //     }
 
-        return [...colorMap.entries()].sort((a, b) => b[1] - a[1])[0][0];
-    };
+    //     return [...colorMap.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    // };
 
     const analyzeContrast = async (imgFile: File) => {
-        const sectionCountX = 5;
-        const sectionCountY = 5;
+        const sectionCountX = 10;
+        const sectionCountY = 10;
         const frequentColorInSection = (data: Uint8ClampedArray, width: number, height: number, sectionX: number, sectionY: number, sectionWidth: number, sectionHeight: number, topN = 3) => {
             const colorMap = new Map<string, number>();
             for(let y= sectionY; y < sectionY + sectionHeight; y++) {
@@ -70,14 +70,14 @@ const UploadPage = () => {
             }
             return [...colorMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, topN).map(entry => entry[0]);
         };
-        const getMostFrequentColor = (data: Uint8ClampedArray, topN = 3) => {
-            const colorMap = new Map<string, number>();
-            for (let i = 0; i < data.length; i += 4) {
-                const hex = rgbToHex(data[i], data[i + 1], data[i + 2]);
-                colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
-            }
-            return [...colorMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, topN).map(entry => entry[0]);
-        };
+        // const getMostFrequentColor = (data: Uint8ClampedArray, topN = 3) => {
+        //     const colorMap = new Map<string, number>();
+        //     for (let i = 0; i < data.length; i += 4) {
+        //         const hex = rgbToHex(data[i], data[i + 1], data[i + 2]);
+        //         colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
+        //     }
+        //     return [...colorMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, topN).map(entry => entry[0]);
+        // };
         return new Promise<{ x: number; y: number }[]>((resolve) => {
             const img = new Image();
             img.src = URL.createObjectURL(imgFile);
@@ -240,29 +240,31 @@ const UploadPage = () => {
         console.log(jsonScreen)
     } */
  
-/*     const handleDebugSimpleOpenAIReq = async () => {
-        try {
-            const response = await fetch(
-                `https://api.leanscope.io/ai/stream-chat-completion`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`
-                    },
-                    body: JSON.stringify({
-                        "model": "gpt-4o",
-                        "messages": [{
-                            "role": "user",
-                            "content": "Hello"
-                        }]
-                    }) //still returning a server error
-                }
-            );
-            console.log(response);
+    // const handleDebugSimpleOpenAIReq = async () => {
+    //     try {
+    //         const response = await fetch(
+    //             `https://api.leanscope.io/ai/stream-chat-completion`, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Authorization': `Bearer ${import.meta.env.VITE_LEANSCOPE_BEARER_TOKEN}`,
+    //                     'content-type' : 'application/json',
+    //                     accept: 'application/json'
+    //                 },
+    //                 body: {
+    //                     model: "gpt-4o",
+    //                     "messages": [{
+    //                         "role": "user",
+    //                         "content": "Hello"
+    //                     }]
+    //                 } //returns bad request, see screenshot for details
+    //             }
+    //         );
+    //         console.log(response);
 
-        } catch(e) {
-            console.log(e);
-        }        
-    } */
+    //     } catch(e) {
+    //         console.log(e);
+    //     }        
+    // }
  
     // const handleDebugSimpleOpenAIReq = async () => {
     //     const completion = await client.chat.completions.create({
