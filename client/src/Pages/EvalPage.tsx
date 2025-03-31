@@ -40,7 +40,7 @@ interface Summary {
 
 interface EvalPageProps {
     dummy_data: DataItem[];
-    summary: Summary;
+    dummy_summary: Summary;
 }
 
 const generateSummary = async (openai: OpenAI, input: string) : Promise<string> => {
@@ -431,7 +431,7 @@ const EvalPage: React.FC<EvalPageProps> =  ({ dummy_data, dummy_summary }) => {
                     </div>
                 </div>
                 <ScrollArea>
-                    <h3 className='summary-title'>Accessibility Checklist</h3>
+                    <h3 className='summary-title'>Inspected Accessibility Guidelines</h3>
                     {Object.entries(checklistsItems).map(([category, guidelines]) => (
                         <div key={category} className='element-tile'>
                             <div className='item-header' onClick={() => toggleExpandGuideline(category)}>

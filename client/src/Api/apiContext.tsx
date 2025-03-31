@@ -134,6 +134,7 @@ export const APIProvider: React.FC<ApiProviderProps> = ({children}) => {
             // );
 
             //direct OpenAI access
+            console.log(`Sending guideline ${guideline} request`);
             const response = await openaiClient.chat.completions.create(payload) //trust me dude
 
             // console.log("Request sent, waiting for response from OpenAI")

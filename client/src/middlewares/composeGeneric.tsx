@@ -5,12 +5,11 @@ import { FilteredImage } from "../Filtering/FilterColor";
 // type ImageCollectionOpenAI = Array<Base64ImageOpenAI>
 
 
-export const composeGeneric = (
+const composeGeneric = (
     imageB64Original: string,
     imageName: string,
     imageB64Filtered: FilteredImage[],
     sysMessage: string,
-    /* fewShotExamples: ImageCollectionOpenAI, */
     userMessage: string
 ) : object => {
 
@@ -74,7 +73,7 @@ export const composeGeneric = (
                         type: 'image_url',
                         image_url: {
                             url: `data:image/png;base64,${imageB64Original}`
-                        } //need to find a way to attach the filtered images too
+                        }
                     }
                 ]
             }
